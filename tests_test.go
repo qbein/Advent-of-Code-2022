@@ -1,6 +1,7 @@
 package adventOfCode2022
 
 import (
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
@@ -9,23 +10,17 @@ import (
 
 func TestFindMinIndex(t *testing.T) {
 	var minIndex = findMinIndex([]int{12, 56, 1, 6})
-	if minIndex != 2 {
-		t.Fatalf(`Expected index 2 to be returned as minimum, got %v`, minIndex)
-	}
+	assert.Equal(t, 2, minIndex)
 }
 
 func Test0101Example(t *testing.T) {
 	maxCalories := findMaxGroupsInIntList("input/day01_example", 1)[0]
-	if maxCalories != 24000 {
-		t.Fatalf(`Expected the elf with most calories to carry %v, got %v`, 12, maxCalories)
-	}
+	assert.Equal(t, 24000, maxCalories)
 }
 
 func Test0101(t *testing.T) {
 	maxCalories := findMaxGroupsInIntList("input/day01", 1)[0]
-	if maxCalories != 69883 {
-		t.Fatalf(`Expected the elf with most calories to carry %v, got %v`, 12, maxCalories)
-	}
+	assert.Equal(t, 69883, maxCalories)
 }
 
 // ---------------------------------------------------------------------------
@@ -33,16 +28,12 @@ func Test0101(t *testing.T) {
 
 func Test0102Example(t *testing.T) {
 	maxCalories := sum(findMaxGroupsInIntList("input/day01_example", 3))
-	if maxCalories != 45000 {
-		t.Fatalf(`Expected the top three elfs with most calories to carry %v, got %v`, 12, maxCalories)
-	}
+	assert.Equal(t, 45000, maxCalories)
 }
 
 func Test0102(t *testing.T) {
 	maxCalories := sum(findMaxGroupsInIntList("input/day01", 3))
-	if maxCalories != 207576 {
-		t.Fatalf(`Expected the top three elfs with most calories to carry %v, got %v`, 12, maxCalories)
-	}
+	assert.Equal(t, 207576, maxCalories)
 }
 
 // ---------------------------------------------------------------------------
