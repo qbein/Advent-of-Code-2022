@@ -13,7 +13,32 @@ func check(e error) {
 	}
 }
 
-func findHigestNumberInGroupedList(fileName string) int {
+func findMinIndex(slice []int) int {
+	minIndex := 0
+	for i := 1; i < len(slice); i++ {
+		if slice[i] < slice[minIndex] {
+			minIndex = i
+		}
+	}
+	return minIndex
+}
+
+func updateGroups(groups *[]int, current int) {
+	var minIndex = findMinIndex(*groups)
+	if current > (*groups)[minIndex] {
+		(*groups)[minIndex] = current
+	}
+}
+
+func sum(values []int) int {
+	var sum = 0
+	for i := 0; i < len(values); i++ {
+		sum += values[i]
+	}
+	return sum
+}
+
+func findMaxGroupsInIntList(fileName string, num int) []int {
 	file, err := os.Open(fileName)
 	check(err)
 
@@ -21,15 +46,14 @@ func findHigestNumberInGroupedList(fileName string) int {
 
 	scanner := bufio.NewScanner(file)
 
-	var max, current int = 0, 0
+	var current int = 0
+	var groups = make([]int, num)
 
 	for scanner.Scan() {
 		valueAsString := strings.TrimSpace(scanner.Text())
 
 		if valueAsString == "" {
-			if current > max {
-				max = current
-			}
+			updateGroups(&groups, current)
 			current = 0
 			continue
 		}
@@ -40,9 +64,7 @@ func findHigestNumberInGroupedList(fileName string) int {
 		current += value
 	}
 
-	if current > max {
-		max = current
-	}
+	updateGroups(&groups, current)
 
-	return max
+	return groups
 }
