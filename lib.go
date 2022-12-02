@@ -7,6 +7,28 @@ import (
 	"strings"
 )
 
+// -----------------------------------------------------------------------
+// Types
+
+type RockPaperScissors int8
+
+const (
+	Rock     = 1
+	Paper    = 2
+	Scissors = 3
+)
+
+type RockPaperScissorsScore int8
+
+const (
+	Loose = 0
+	Draw  = 3
+	Win   = 6
+)
+
+// -----------------------------------------------------------------------
+// Functions
+
 func check(e error) {
 	if e != nil {
 		panic(e)
@@ -67,4 +89,53 @@ func findMaxGroupsInIntList(fileName string, num int) []int {
 	updateGroups(&groups, current)
 
 	return groups
+}
+
+func isRockPaperScissorsWin(you RockPaperScissors, opponent RockPaperScissors) bool {
+	return you == Rock && opponent == Scissors ||
+		you == Paper && opponent == Rock ||
+		you == Scissors && opponent == Paper
+}
+
+func evaluateRockPaperScissors(you RockPaperScissors, opponent RockPaperScissors) RockPaperScissorsScore {
+	if isRockPaperScissorsWin(you, opponent) {
+		return Win
+	} else if isRockPaperScissorsWin(opponent, you) {
+		return Loose
+	} else {
+		return Draw
+	}
+}
+
+func scoreRockPaperScissors(you RockPaperScissors, opponent RockPaperScissors) int {
+	return int(evaluateRockPaperScissors(you, opponent)) + int(you)
+}
+
+func charToRockPaperScissors(input byte) RockPaperScissors {
+	if input == 'A' || input == 'X' {
+		return Rock
+	} else if input == 'B' || input == 'Y' {
+		return Paper
+	} else {
+		return Scissors
+	}
+}
+
+func readAndEvaluateRockPaperScissors(fileName string) int {
+	file, err := os.Open(fileName)
+	check(err)
+
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+
+	score := 0
+
+	for scanner.Scan() {
+		valueAsString := strings.TrimSpace(scanner.Text())
+		plays := strings.Split(valueAsString, " ")
+		score += scoreRockPaperScissors(charToRockPaperScissors(plays[1][0]), charToRockPaperScissors(plays[0][0]))
+	}
+
+	return score
 }
