@@ -2,6 +2,7 @@ package adventOfCode2022
 
 import (
 	"bufio"
+	"fmt"
 	"os"
 	"strconv"
 	"strings"
@@ -18,7 +19,7 @@ const (
 	Scissors = 3
 )
 
-type RockPaperScissorsScore int8
+type RockPaperScissorsOutcome int8
 
 const (
 	Loose = 0
@@ -97,7 +98,30 @@ func isRockPaperScissorsWin(you RockPaperScissors, opponent RockPaperScissors) b
 		you == Scissors && opponent == Paper
 }
 
-func evaluateRockPaperScissors(you RockPaperScissors, opponent RockPaperScissors) RockPaperScissorsScore {
+func findRockPaperScissorsForOutcome(opponent RockPaperScissors, outcome RockPaperScissorsOutcome) RockPaperScissors {
+	if outcome == Win {
+		if opponent == Scissors {
+			return Rock
+		} else if opponent == Rock {
+			return Paper
+		} else {
+			return Scissors
+		}
+	}
+	if outcome == Loose {
+		if opponent == Scissors {
+			return Paper
+		} else if opponent == Rock {
+			return Scissors
+		} else {
+			return Rock
+		}
+	} else {
+		return opponent
+	}
+}
+
+func evaluateRockPaperScissors(you RockPaperScissors, opponent RockPaperScissors) RockPaperScissorsOutcome {
 	if isRockPaperScissorsWin(you, opponent) {
 		return Win
 	} else if isRockPaperScissorsWin(opponent, you) {
@@ -121,6 +145,18 @@ func charToRockPaperScissors(input byte) RockPaperScissors {
 	}
 }
 
+func charToRockPaperScissorsOutcome(input byte) RockPaperScissorsOutcome {
+	if input == 'X' {
+		return Loose
+	} else if input == 'Y' {
+		return Draw
+	} else if input == 'Z' {
+		return Win
+	} else {
+		panic(fmt.Sprintf("Unexpected input %c", input))
+	}
+}
+
 func readAndEvaluateRockPaperScissors(fileName string) int {
 	file, err := os.Open(fileName)
 	check(err)
@@ -135,6 +171,29 @@ func readAndEvaluateRockPaperScissors(fileName string) int {
 		valueAsString := strings.TrimSpace(scanner.Text())
 		plays := strings.Split(valueAsString, " ")
 		score += scoreRockPaperScissors(charToRockPaperScissors(plays[1][0]), charToRockPaperScissors(plays[0][0]))
+	}
+
+	return score
+}
+
+func readAndEvaluateRockPaperScissorsOutcome(fileName string) int {
+	file, err := os.Open(fileName)
+	check(err)
+
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+
+	score := 0
+
+	for scanner.Scan() {
+		valueAsString := strings.TrimSpace(scanner.Text())
+		plays := strings.Split(valueAsString, " ")
+		play := findRockPaperScissorsForOutcome(
+			charToRockPaperScissors(plays[0][0]),
+			charToRockPaperScissorsOutcome(plays[1][0]))
+
+		score += scoreRockPaperScissors(play, charToRockPaperScissors(plays[0][0]))
 	}
 
 	return score

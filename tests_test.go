@@ -64,3 +64,7 @@ func Test0201Example(t *testing.T) {
 func Test0201(t *testing.T) {
 	assert.Equal(t, 11841, readAndEvaluateRockPaperScissors("input/day02"))
 }
+
+func Test0202(t *testing.T) {
+	assert.Equal(t, 13022, readAndEvaluateRockPaperScissorsOutcome("input/day02"))
+}
