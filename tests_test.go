@@ -74,3 +74,11 @@ func Test0202(t *testing.T) {
 
 // ---------------------------------------------------------------------------
 // Advent of Code 2022: Day 3, part 1
+
+func Test0301Example(t *testing.T) {
+	assert.Equal(t, 157, resolveRucksackPriority("input/day03_example"))
+}
+
+func Test0301(t *testing.T) {
+	assert.Equal(t, 8088, resolveRucksackPriority("input/day03"))
+}

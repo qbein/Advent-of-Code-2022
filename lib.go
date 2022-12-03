@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 )
@@ -78,14 +79,14 @@ func findMaxGroupsInIntList(fileName string, num int) []int {
 	var current int = 0
 	var groups = make([]int, num)
 
-	forLines(fileName, func(valueAsString string) {
-		if valueAsString == "" {
+	forLines(fileName, func(line string) {
+		if line == "" {
 			updateGroups(&groups, current)
 			current = 0
 			return
 		}
 
-		value, err := strconv.Atoi(valueAsString)
+		value, err := strconv.Atoi(line)
 		check(err)
 
 		current += value
@@ -164,8 +165,8 @@ func charToRockPaperScissorsOutcome(input byte) RockPaperScissorsOutcome {
 func readAndEvaluateRockPaperScissors(fileName string) int {
 	score := 0
 
-	forLines(fileName, func(valueAsString string) {
-		plays := strings.Split(valueAsString, " ")
+	forLines(fileName, func(line string) {
+		plays := strings.Split(line, " ")
 		score += scoreRockPaperScissors(charToRockPaperScissors(plays[1][0]), charToRockPaperScissors(plays[0][0]))
 	})
 
@@ -185,4 +186,33 @@ func readAndEvaluateRockPaperScissorsOutcome(fileName string) int {
 	})
 
 	return score
+}
+
+func resolveRucksackPriority(fileName string) int {
+	priority := 0
+
+	forLines(fileName, func(line string) {
+		var compA, compB = line[0 : len(line)/2], line[len(line)/2:]
+
+		r := regexp.MustCompile("[" + compA + "]")
+		match := r.FindStringSubmatch(compB)
+
+		if len(match) != 1 || len(match[0]) != 1 {
+			panic("Expected single byte match")
+		}
+
+		commonItem := match[0][0]
+
+		subtract := 0
+		if int(commonItem) < int('a') {
+			subtract = int('A') - 27
+		} else {
+			subtract = int('a') - 1
+		}
+
+		itemPriority := int(match[0][0]) - subtract
+		priority += itemPriority
+	})
+
+	return priority
 }
