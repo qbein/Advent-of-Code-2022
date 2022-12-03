@@ -41,7 +41,12 @@ func forLines(fileName string, action func(string)) {
 	file, err := os.Open(fileName)
 	check(err)
 
-	defer file.Close()
+	defer func(file *os.File) {
+		err := file.Close()
+		if err != nil {
+			panic(err)
+		}
+	}(file)
 
 	scanner := bufio.NewScanner(file)
 
@@ -76,7 +81,7 @@ func sum(values []int) int {
 }
 
 func findMaxGroupsInIntList(fileName string, num int) []int {
-	var current int = 0
+	var current = 0
 	var groups = make([]int, num)
 
 	forLines(fileName, func(line string) {
@@ -188,30 +193,79 @@ func readAndEvaluateRockPaperScissorsOutcome(fileName string) int {
 	return score
 }
 
+func flattenUnique(input [][]string) string {
+	m := make(map[string]string)
+	for _, el := range input {
+		m[el[0]] = el[0]
+	}
+	s := make([]string, len(m))
+	for _, el := range m {
+		s = append(s, el)
+	}
+	return strings.Join(s, "")
+}
+
+func findCommonChars(input []string) string {
+	if len(input) < 1 {
+		return ""
+	}
+
+	common := input[0]
+
+	for i := 0; i < len(input)-1; i++ {
+		r := regexp.MustCompile("[" + common + "]")
+		common = flattenUnique(r.FindAllStringSubmatch(input[i+1], -1))
+	}
+
+	return common
+}
+
 func resolveRucksackPriority(fileName string) int {
 	priority := 0
 
 	forLines(fileName, func(line string) {
 		var compA, compB = line[0 : len(line)/2], line[len(line)/2:]
 
-		r := regexp.MustCompile("[" + compA + "]")
-		match := r.FindStringSubmatch(compB)
-
-		if len(match) != 1 || len(match[0]) != 1 {
+		match := findCommonChars([]string{compA, compB})
+		if len(match) != 1 {
 			panic("Expected single byte match")
 		}
+		priority += calculatePriority(match[0])
+	})
 
-		commonItem := match[0][0]
+	return priority
+}
 
-		subtract := 0
-		if int(commonItem) < int('a') {
-			subtract = int('A') - 27
-		} else {
-			subtract = int('a') - 1
+func calculatePriority(input byte) int {
+	subtract := 0
+	if int(input) < int('a') {
+		subtract = int('A') - 27
+	} else {
+		subtract = int('a') - 1
+	}
+	return int(input) - subtract
+}
+
+func resolveRucksackChunkedPriority(fileName string, chunkSize int) int {
+	priority := 0
+
+	i := 0
+	chunk := make([]string, chunkSize)
+
+	forLines(fileName, func(line string) {
+		defer func() {
+			i++
+		}()
+
+		chunk[i%chunkSize] = line
+
+		if i%chunkSize == chunkSize-1 {
+			common := findCommonChars(chunk[:])
+			if len(common) != 1 {
+				panic(fmt.Sprintf("Incorrect common items found %s, %q\n", common, chunk))
+			}
+			priority += calculatePriority(common[0])
 		}
-
-		itemPriority := int(match[0][0]) - subtract
-		priority += itemPriority
 	})
 
 	return priority

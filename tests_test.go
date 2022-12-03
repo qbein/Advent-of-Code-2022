@@ -82,3 +82,14 @@ func Test0301Example(t *testing.T) {
 func Test0301(t *testing.T) {
 	assert.Equal(t, 8088, resolveRucksackPriority("input/day03"))
 }
+
+// ---------------------------------------------------------------------------
+// Advent of Code 2022: Day 3, part 2
+
+func Test0302Example(t *testing.T) {
+	assert.Equal(t, 70, resolveRucksackChunkedPriority("input/day03_example", 3))
+}
+
+func Test0302(t *testing.T) {
+	assert.Equal(t, 2522, resolveRucksackChunkedPriority("input/day03", 3))
+}
