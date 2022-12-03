@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-// -----------------------------------------------------------------------
+// ---------------------------------------------------------------------------
 // Types
 
 type RockPaperScissors int8
@@ -27,12 +27,25 @@ const (
 	Win   = 6
 )
 
-// -----------------------------------------------------------------------
+// ---------------------------------------------------------------------------
 // Functions
 
 func check(e error) {
 	if e != nil {
 		panic(e)
+	}
+}
+
+func forLines(fileName string, action func(string)) {
+	file, err := os.Open(fileName)
+	check(err)
+
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+
+	for scanner.Scan() {
+		action(strings.TrimSpace(scanner.Text()))
 	}
 }
 
@@ -62,30 +75,21 @@ func sum(values []int) int {
 }
 
 func findMaxGroupsInIntList(fileName string, num int) []int {
-	file, err := os.Open(fileName)
-	check(err)
-
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
-
 	var current int = 0
 	var groups = make([]int, num)
 
-	for scanner.Scan() {
-		valueAsString := strings.TrimSpace(scanner.Text())
-
+	forLines(fileName, func(valueAsString string) {
 		if valueAsString == "" {
 			updateGroups(&groups, current)
 			current = 0
-			continue
+			return
 		}
 
 		value, err := strconv.Atoi(valueAsString)
 		check(err)
 
 		current += value
-	}
+	})
 
 	updateGroups(&groups, current)
 
@@ -158,43 +162,27 @@ func charToRockPaperScissorsOutcome(input byte) RockPaperScissorsOutcome {
 }
 
 func readAndEvaluateRockPaperScissors(fileName string) int {
-	file, err := os.Open(fileName)
-	check(err)
-
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
-
 	score := 0
 
-	for scanner.Scan() {
-		valueAsString := strings.TrimSpace(scanner.Text())
+	forLines(fileName, func(valueAsString string) {
 		plays := strings.Split(valueAsString, " ")
 		score += scoreRockPaperScissors(charToRockPaperScissors(plays[1][0]), charToRockPaperScissors(plays[0][0]))
-	}
+	})
 
 	return score
 }
 
 func readAndEvaluateRockPaperScissorsOutcome(fileName string) int {
-	file, err := os.Open(fileName)
-	check(err)
-
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
-
 	score := 0
 
-	for scanner.Scan() {
-		valueAsString := strings.TrimSpace(scanner.Text())
+	forLines(fileName, func(valueAsString string) {
 		plays := strings.Split(valueAsString, " ")
 		play := findRockPaperScissorsForOutcome(
 			charToRockPaperScissors(plays[0][0]),
 			charToRockPaperScissorsOutcome(plays[1][0]))
 
 		score += scoreRockPaperScissors(play, charToRockPaperScissors(plays[0][0]))
-	}
+	})
 
 	return score
 }

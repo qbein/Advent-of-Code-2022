@@ -65,6 +65,12 @@ func Test0201(t *testing.T) {
 	assert.Equal(t, 11841, readAndEvaluateRockPaperScissors("input/day02"))
 }
 
+// ---------------------------------------------------------------------------
+// Advent of Code 2022: Day 2, part 2
+
 func Test0202(t *testing.T) {
 	assert.Equal(t, 13022, readAndEvaluateRockPaperScissorsOutcome("input/day02"))
 }
+
+// ---------------------------------------------------------------------------
+// Advent of Code 2022: Day 3, part 1
