@@ -93,3 +93,14 @@ func Test0302Example(t *testing.T) {
 func Test0302(t *testing.T) {
 	assert.Equal(t, 2522, resolveRucksackChunkedPriority("input/day03", 3))
 }
+
+// ---------------------------------------------------------------------------
+// Advent of Code 2022: Day 4, part 1
+
+func Test0401Example(t *testing.T) {
+	assert.Equal(t, 2, findCleaningAreaOverlap("input/day04_example"))
+}
+
+func Test0401(t *testing.T) {
+	assert.Equal(t, 462, findCleaningAreaOverlap("input/day04"))
+}

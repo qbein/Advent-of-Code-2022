@@ -270,3 +270,26 @@ func resolveRucksackChunkedPriority(fileName string, chunkSize int) int {
 
 	return priority
 }
+
+func MustAtoi(input string) int {
+	output, err := strconv.Atoi(input)
+	if err != nil {
+		panic(fmt.Sprintf("Cannot convert %s to int", input))
+	}
+	return output
+}
+
+func findCleaningAreaOverlap(fileName string) int {
+	overlapCount := 0
+
+	r := regexp.MustCompile(`[-,]`)
+	forLines(fileName, func(line string) {
+		parts := r.Split(line, -1)
+		if MustAtoi(parts[0]) >= MustAtoi(parts[2]) && MustAtoi(parts[1]) <= MustAtoi(parts[3]) ||
+			MustAtoi(parts[2]) >= MustAtoi(parts[0]) && MustAtoi(parts[3]) <= MustAtoi(parts[1]) {
+			overlapCount++
+		}
+	})
+
+	return overlapCount
+}
