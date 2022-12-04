@@ -279,15 +279,25 @@ func MustAtoi(input string) int {
 	return output
 }
 
-func findCleaningAreaOverlap(fileName string) int {
+func findCleaningAreaOverlap(fileName string, requireFullOverlap bool) int {
 	overlapCount := 0
 
 	r := regexp.MustCompile(`[-,]`)
 	forLines(fileName, func(line string) {
-		parts := r.Split(line, -1)
-		if MustAtoi(parts[0]) >= MustAtoi(parts[2]) && MustAtoi(parts[1]) <= MustAtoi(parts[3]) ||
-			MustAtoi(parts[2]) >= MustAtoi(parts[0]) && MustAtoi(parts[3]) <= MustAtoi(parts[1]) {
-			overlapCount++
+		p := r.Split(line, -1)
+		s1, e1, s2, e2 := MustAtoi(p[0]), MustAtoi(p[1]), MustAtoi(p[2]), MustAtoi(p[3])
+		if requireFullOverlap {
+			if s1 >= s2 && e1 <= e2 {
+				overlapCount++
+			} else if s2 >= s1 && e2 <= e1 {
+				overlapCount++
+			}
+		} else {
+			if s1 >= s2 && s1 <= e2 {
+				overlapCount++
+			} else if s2 >= s1 && s2 <= e1 {
+				overlapCount++
+			}
 		}
 	})
 

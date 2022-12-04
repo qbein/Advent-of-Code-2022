@@ -98,9 +98,20 @@ func Test0302(t *testing.T) {
 // Advent of Code 2022: Day 4, part 1
 
 func Test0401Example(t *testing.T) {
-	assert.Equal(t, 2, findCleaningAreaOverlap("input/day04_example"))
+	assert.Equal(t, 2, findCleaningAreaOverlap("input/day04_example", true))
 }
 
 func Test0401(t *testing.T) {
-	assert.Equal(t, 462, findCleaningAreaOverlap("input/day04"))
+	assert.Equal(t, 462, findCleaningAreaOverlap("input/day04", true))
+}
+
+// ---------------------------------------------------------------------------
+// Advent of Code 2022: Day 4, part 2
+
+func Test0402Example(t *testing.T) {
+	assert.Equal(t, 4, findCleaningAreaOverlap("input/day04_example", false))
+}
+
+func Test0402(t *testing.T) {
+	assert.Equal(t, 835, findCleaningAreaOverlap("input/day04", false))
 }
