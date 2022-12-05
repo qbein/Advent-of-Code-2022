@@ -3,7 +3,6 @@ package adventOfCode2022
 import (
 	"bufio"
 	"fmt"
-	"github.com/golang-collections/collections/stack"
 	"os"
 	"regexp"
 	"strconv"
@@ -311,14 +310,11 @@ func getStackCount(numericRow string) int {
 	return MustAtoi(numericRow[i:])
 }
 
-func parseStacks(stacksStrs []string) []stack.Stack {
+func parseStacks(stacksStrs []string) [][]byte {
 	stackCnt := getStackCount(stacksStrs[len(stacksStrs)-1])
-	stacks := make([]stack.Stack, stackCnt)
-	for i := 0; i < stackCnt; i++ {
-		stacks[i] = stack.Stack{}
-	}
+	stacks := make([][]byte, stackCnt)
 
-	for row := len(stacksStrs) - 1; row >= 0; row-- {
+	for row := len(stacksStrs) - 2; row >= 0; row-- {
 		for col := 0; col < stackCnt; col++ {
 			rowStr := stacksStrs[row]
 
@@ -331,7 +327,7 @@ func parseStacks(stacksStrs []string) []stack.Stack {
 			if chrIdx < len(rowStr) {
 				value := rowStr[chrIdx]
 				if value != ' ' && value != 0 {
-					stacks[col].Push(value)
+					stacks[col] = append(stacks[col], value)
 				}
 			}
 		}
@@ -340,36 +336,48 @@ func parseStacks(stacksStrs []string) []stack.Stack {
 	return stacks
 }
 
-func rearrangeCrates(fileName string) string {
-	var stacks []stack.Stack
+func rearrangeCrates(fileName string, craneVersion int) string {
+	var stacks [][]byte
 	var stackStrs []string
-	r := regexp.MustCompile(`move (\d+) from (\d+) to (\d+)`)
+	operationRegexp := regexp.MustCompile(`move (\d+) from (\d+) to (\d+)`)
 
 	forLines(fileName, func(line string) {
+		// Parse stack configurations until first empty line
 		if stacks == nil && len(strings.TrimSpace(line)) > 0 {
 			stackStrs = append(stackStrs, line)
 			return
 		}
 
+		// All stacks are read, parse into slices
 		if stacks == nil {
 			stacks = parseStacks(stackStrs)
 		}
 
-		if len(line) == 0 {
+		m := operationRegexp.FindAllStringSubmatch(line, -1)
+
+		// Skip lines without operations
+		if m == nil {
 			return
 		}
 
-		m := r.FindAllStringSubmatch(line, -1)
-		num, from, to := MustAtoi(m[0][1]), MustAtoi(m[0][2]), MustAtoi(m[0][3])
+		num, fromIdx, toIdx := MustAtoi(m[0][1]), MustAtoi(m[0][2])-1, MustAtoi(m[0][3])-1
 
-		for i := 0; i < num; i++ {
-			stacks[to-1].Push(stacks[from-1].Pop())
+		if craneVersion <= 9000 {
+			for i := 0; i < num; i++ {
+				removed := stacks[fromIdx][len(stacks[fromIdx])-1]
+				stacks[fromIdx] = stacks[fromIdx][0 : len(stacks[fromIdx])-1]
+				stacks[toIdx] = append(stacks[toIdx], removed)
+			}
+		} else {
+			removed := stacks[fromIdx][len(stacks[fromIdx])-num:]
+			stacks[fromIdx] = stacks[fromIdx][0 : len(stacks[fromIdx])-num]
+			stacks[toIdx] = append(stacks[toIdx], removed...)
 		}
 	})
 
 	output := ""
 	for _, s := range stacks {
-		output += string(s.Pop().(byte))
+		output += string(s[len(s)-1])
 	}
 	return output
 }

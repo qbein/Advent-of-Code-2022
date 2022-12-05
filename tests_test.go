@@ -120,9 +120,20 @@ func Test0402(t *testing.T) {
 // Advent of Code 2022: Day 5, part 1
 
 func Test0501Example(t *testing.T) {
-	assert.Equal(t, "CMZ", rearrangeCrates("input/day05_example"))
+	assert.Equal(t, "CMZ", rearrangeCrates("input/day05_example", 9000))
 }
 
 func Test0501(t *testing.T) {
-	assert.Equal(t, "CVCWCRTVQ", rearrangeCrates("input/day05"))
+	assert.Equal(t, "CVCWCRTVQ", rearrangeCrates("input/day05", 9000))
+}
+
+// ---------------------------------------------------------------------------
+// Advent of Code 2022: Day 5, part 2
+
+func Test0502Example(t *testing.T) {
+	assert.Equal(t, "MCD", rearrangeCrates("input/day05_example", 9001))
+}
+
+func Test0502(t *testing.T) {
+	assert.Equal(t, "CNSCZWLVT", rearrangeCrates("input/day05", 9001))
 }
