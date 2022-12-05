@@ -28,6 +28,32 @@ const (
 	Win   = 6
 )
 
+type CrateMover interface {
+	// MoveCrates moves the given number of crates from one stack to another.
+	// Should be ok to modify stacks without directly: https://stackoverflow.com/a/39993797/738002
+	MoveCrates(stacks [][]rune, num int, fromIdx int, toIdx int)
+}
+
+type CrateMover9000 struct {
+}
+
+func (p *CrateMover9000) MoveCrates(stacks [][]rune, num int, fromIdx int, toIdx int) {
+	for i := 0; i < num; i++ {
+		removed := stacks[fromIdx][len(stacks[fromIdx])-1]
+		stacks[fromIdx] = stacks[fromIdx][0 : len(stacks[fromIdx])-1]
+		stacks[toIdx] = append(stacks[toIdx], removed)
+	}
+}
+
+type CrateMover9001 struct {
+}
+
+func (p *CrateMover9001) MoveCrates(stacks [][]rune, num int, fromIdx int, toIdx int) {
+	removed := stacks[fromIdx][len(stacks[fromIdx])-num:]
+	stacks[fromIdx] = stacks[fromIdx][0 : len(stacks[fromIdx])-num]
+	stacks[toIdx] = append(stacks[toIdx], removed...)
+}
+
 // ---------------------------------------------------------------------------
 // Functions
 
@@ -310,13 +336,13 @@ func getStackCount(numericRow string) int {
 	return MustAtoi(numericRow[i:])
 }
 
-func parseStacks(stacksStrs []string) [][]byte {
-	stackCnt := getStackCount(stacksStrs[len(stacksStrs)-1])
-	stacks := make([][]byte, stackCnt)
+func parseStacks(stacksStr []string) [][]rune {
+	stackCnt := getStackCount(stacksStr[len(stacksStr)-1])
+	stacks := make([][]rune, stackCnt)
 
-	for row := len(stacksStrs) - 2; row >= 0; row-- {
+	for row := len(stacksStr) - 2; row >= 0; row-- {
 		for col := 0; col < stackCnt; col++ {
-			rowStr := stacksStrs[row]
+			rowStr := stacksStr[row]
 
 			// Only works for single digit columns
 			chrIdx := 1
@@ -327,7 +353,7 @@ func parseStacks(stacksStrs []string) [][]byte {
 			if chrIdx < len(rowStr) {
 				value := rowStr[chrIdx]
 				if value != ' ' && value != 0 {
-					stacks[col] = append(stacks[col], value)
+					stacks[col] = append(stacks[col], rune(value))
 				}
 			}
 		}
@@ -336,21 +362,21 @@ func parseStacks(stacksStrs []string) [][]byte {
 	return stacks
 }
 
-func rearrangeCrates(fileName string, craneVersion int) string {
-	var stacks [][]byte
-	var stackStrs []string
-	operationRegexp := regexp.MustCompile(`move (\d+) from (\d+) to (\d+)`)
+func rearrangeCrates(fileName string, crane CrateMover) string {
+	var stacks [][]rune
+	var stacksStr []string
+	operationRegexp := regexp.MustCompile(`^move (\d+) from (\d+) to (\d+)$`)
 
 	forLines(fileName, func(line string) {
 		// Parse stack configurations until first empty line
 		if stacks == nil && len(strings.TrimSpace(line)) > 0 {
-			stackStrs = append(stackStrs, line)
+			stacksStr = append(stacksStr, line)
 			return
 		}
 
 		// All stacks are read, parse into slices
 		if stacks == nil {
-			stacks = parseStacks(stackStrs)
+			stacks = parseStacks(stacksStr)
 		}
 
 		m := operationRegexp.FindAllStringSubmatch(line, -1)
@@ -362,22 +388,12 @@ func rearrangeCrates(fileName string, craneVersion int) string {
 
 		num, fromIdx, toIdx := MustAtoi(m[0][1]), MustAtoi(m[0][2])-1, MustAtoi(m[0][3])-1
 
-		if craneVersion <= 9000 {
-			for i := 0; i < num; i++ {
-				removed := stacks[fromIdx][len(stacks[fromIdx])-1]
-				stacks[fromIdx] = stacks[fromIdx][0 : len(stacks[fromIdx])-1]
-				stacks[toIdx] = append(stacks[toIdx], removed)
-			}
-		} else {
-			removed := stacks[fromIdx][len(stacks[fromIdx])-num:]
-			stacks[fromIdx] = stacks[fromIdx][0 : len(stacks[fromIdx])-num]
-			stacks[toIdx] = append(stacks[toIdx], removed...)
-		}
+		crane.MoveCrates(stacks, num, fromIdx, toIdx)
 	})
 
-	output := ""
+	output := strings.Builder{}
 	for _, s := range stacks {
-		output += string(s[len(s)-1])
+		output.WriteRune(s[len(s)-1])
 	}
-	return output
+	return output.String()
 }
