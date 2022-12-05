@@ -3,6 +3,7 @@ package adventOfCode2022
 import (
 	"bufio"
 	"fmt"
+	"github.com/golang-collections/collections/stack"
 	"os"
 	"regexp"
 	"strconv"
@@ -51,7 +52,7 @@ func forLines(fileName string, action func(string)) {
 	scanner := bufio.NewScanner(file)
 
 	for scanner.Scan() {
-		action(strings.TrimSpace(scanner.Text()))
+		action(scanner.Text())
 	}
 }
 
@@ -302,4 +303,73 @@ func findCleaningAreaOverlap(fileName string, requireFullOverlap bool) int {
 	})
 
 	return overlapCount
+}
+
+func getStackCount(numericRow string) int {
+	numericRow = strings.TrimSpace(numericRow)
+	i := strings.LastIndex(numericRow, " ") + 1
+	return MustAtoi(numericRow[i:])
+}
+
+func parseStacks(stacksStrs []string) []stack.Stack {
+	stackCnt := getStackCount(stacksStrs[len(stacksStrs)-1])
+	stacks := make([]stack.Stack, stackCnt)
+	for i := 0; i < stackCnt; i++ {
+		stacks[i] = stack.Stack{}
+	}
+
+	for row := len(stacksStrs) - 1; row >= 0; row-- {
+		for col := 0; col < stackCnt; col++ {
+			rowStr := stacksStrs[row]
+
+			// Only works for single digit columns
+			chrIdx := 1
+			if col > 0 {
+				chrIdx = col + 4 + (col-1)*3
+			}
+
+			if chrIdx < len(rowStr) {
+				value := rowStr[chrIdx]
+				if value != ' ' && value != 0 {
+					stacks[col].Push(value)
+				}
+			}
+		}
+	}
+
+	return stacks
+}
+
+func rearrangeCrates(fileName string) string {
+	var stacks []stack.Stack
+	var stackStrs []string
+	r := regexp.MustCompile(`move (\d+) from (\d+) to (\d+)`)
+
+	forLines(fileName, func(line string) {
+		if stacks == nil && len(strings.TrimSpace(line)) > 0 {
+			stackStrs = append(stackStrs, line)
+			return
+		}
+
+		if stacks == nil {
+			stacks = parseStacks(stackStrs)
+		}
+
+		if len(line) == 0 {
+			return
+		}
+
+		m := r.FindAllStringSubmatch(line, -1)
+		num, from, to := MustAtoi(m[0][1]), MustAtoi(m[0][2]), MustAtoi(m[0][3])
+
+		for i := 0; i < num; i++ {
+			stacks[to-1].Push(stacks[from-1].Pop())
+		}
+	})
+
+	output := ""
+	for _, s := range stacks {
+		output += string(s.Pop().(byte))
+	}
+	return output
 }

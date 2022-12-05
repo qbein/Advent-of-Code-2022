@@ -115,3 +115,14 @@ func Test0402Example(t *testing.T) {
 func Test0402(t *testing.T) {
 	assert.Equal(t, 835, findCleaningAreaOverlap("input/day04", false))
 }
+
+// ---------------------------------------------------------------------------
+// Advent of Code 2022: Day 5, part 1
+
+func Test0501Example(t *testing.T) {
+	assert.Equal(t, "CMZ", rearrangeCrates("input/day05_example"))
+}
+
+func Test0501(t *testing.T) {
+	assert.Equal(t, "CVCWCRTVQ", rearrangeCrates("input/day05"))
+}
