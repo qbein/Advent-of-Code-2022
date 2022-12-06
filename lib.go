@@ -407,8 +407,7 @@ func isAllUnique(input string) bool {
 	return true
 }
 
-func findStartOfPacket(input string) int {
-	frameSize := 4
+func findStartOfPacket(input string, frameSize int) int {
 	for i := frameSize; i < len(input); i++ {
 		frame := input[i-frameSize : i]
 		if isAllUnique(frame) {
@@ -418,10 +417,10 @@ func findStartOfPacket(input string) int {
 	return -1
 }
 
-func findStartOfPacketFromFile(fileName string) int {
+func findStartOfPacketFromFile(fileName string, frameSize int) int {
 	start := -1
 	forLines(fileName, func(line string) {
-		start = findStartOfPacket(line)
+		start = findStartOfPacket(line, frameSize)
 	})
 	return start
 }

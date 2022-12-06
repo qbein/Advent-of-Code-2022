@@ -142,13 +142,28 @@ func Test0502(t *testing.T) {
 // Advent of Code 2022: Day 6, part 1
 
 func Test0601Example(t *testing.T) {
-	assert.Equal(t, 7, findStartOfPacket("mjqjpqmgbljsphdztnvjfqwrcgsmlb"))
-	assert.Equal(t, 5, findStartOfPacket("bvwbjplbgvbhsrlpgdmjqwftvncz"))
-	assert.Equal(t, 6, findStartOfPacket("nppdvjthqldpwncqszvftbrmjlhg"))
-	assert.Equal(t, 10, findStartOfPacket("nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg"))
-	assert.Equal(t, 11, findStartOfPacket("zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw"))
+	assert.Equal(t, 7, findStartOfPacket("mjqjpqmgbljsphdztnvjfqwrcgsmlb", 4))
+	assert.Equal(t, 5, findStartOfPacket("bvwbjplbgvbhsrlpgdmjqwftvncz", 4))
+	assert.Equal(t, 6, findStartOfPacket("nppdvjthqldpwncqszvftbrmjlhg", 4))
+	assert.Equal(t, 10, findStartOfPacket("nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg", 4))
+	assert.Equal(t, 11, findStartOfPacket("zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw", 4))
 }
 
 func Test0601(t *testing.T) {
-	assert.Equal(t, 1275, findStartOfPacketFromFile("input/day06"))
+	assert.Equal(t, 1275, findStartOfPacketFromFile("input/day06", 4))
+}
+
+// ---------------------------------------------------------------------------
+// Advent of Code 2022: Day 6, part 2
+
+func Test0602Example(t *testing.T) {
+	assert.Equal(t, 19, findStartOfPacket("mjqjpqmgbljsphdztnvjfqwrcgsmlb", 14))
+	assert.Equal(t, 23, findStartOfPacket("bvwbjplbgvbhsrlpgdmjqwftvncz", 14))
+	assert.Equal(t, 23, findStartOfPacket("nppdvjthqldpwncqszvftbrmjlhg", 14))
+	assert.Equal(t, 29, findStartOfPacket("nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg", 14))
+	assert.Equal(t, 26, findStartOfPacket("zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw", 14))
+}
+
+func Test0602(t *testing.T) {
+	assert.Equal(t, 3605, findStartOfPacketFromFile("input/day06", 14))
 }
