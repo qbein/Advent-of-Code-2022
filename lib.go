@@ -397,3 +397,31 @@ func rearrangeCrates(fileName string, crane CrateMover) string {
 	}
 	return output.String()
 }
+
+func isAllUnique(input string) bool {
+	for i := 0; i < len(input); i++ {
+		if strings.LastIndex(input, string(input[i])) != i {
+			return false
+		}
+	}
+	return true
+}
+
+func findStartOfPacket(input string) int {
+	frameSize := 4
+	for i := frameSize; i < len(input); i++ {
+		frame := input[i-frameSize : i]
+		if isAllUnique(frame) {
+			return i
+		}
+	}
+	return -1
+}
+
+func findStartOfPacketFromFile(fileName string) int {
+	start := -1
+	forLines(fileName, func(line string) {
+		start = findStartOfPacket(line)
+	})
+	return start
+}

@@ -137,3 +137,18 @@ func Test0502Example(t *testing.T) {
 func Test0502(t *testing.T) {
 	assert.Equal(t, "CNSCZWLVT", rearrangeCrates("input/day05", new(CrateMover9001)))
 }
+
+// ---------------------------------------------------------------------------
+// Advent of Code 2022: Day 6, part 1
+
+func Test0601Example(t *testing.T) {
+	assert.Equal(t, 7, findStartOfPacket("mjqjpqmgbljsphdztnvjfqwrcgsmlb"))
+	assert.Equal(t, 5, findStartOfPacket("bvwbjplbgvbhsrlpgdmjqwftvncz"))
+	assert.Equal(t, 6, findStartOfPacket("nppdvjthqldpwncqszvftbrmjlhg"))
+	assert.Equal(t, 10, findStartOfPacket("nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg"))
+	assert.Equal(t, 11, findStartOfPacket("zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw"))
+}
+
+func Test0601(t *testing.T) {
+	assert.Equal(t, 1275, findStartOfPacketFromFile("input/day06"))
+}
