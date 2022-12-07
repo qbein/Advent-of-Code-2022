@@ -3,8 +3,10 @@ package adventOfCode2022
 import (
 	"bufio"
 	"fmt"
+	"golang.org/x/exp/maps"
 	"os"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -425,7 +427,7 @@ func findStartOfPacketFromFile(fileName string, frameSize int) int {
 	return start
 }
 
-func dirSizes(fileName string) int {
+func buildDirSizes(fileName string) map[string]int {
 	dir := make(map[string]int)
 
 	cmdRegex := regexp.MustCompile(`^\$ ([a-z]+)(.*)$`)
@@ -462,6 +464,12 @@ func dirSizes(fileName string) int {
 		}
 	})
 
+	return dir
+}
+
+func dirSizes(fileName string) int {
+	dir := buildDirSizes(fileName)
+
 	sum := 0
 	for _, value := range dir {
 		if value < 100000 {
@@ -480,4 +488,20 @@ func addSizeToParentDirs(cd string, dir map[string]int, fileSize int) {
 		cd = cd[0:i]
 		dir[cd] += fileSize
 	}
+}
+
+func findDirToDelete(total int, required int, fileName string) int {
+	dir := buildDirSizes(fileName)
+
+	available := total - dir["/"]
+	values := maps.Values(dir)
+	sort.Ints(values)
+
+	for _, value := range values {
+		if available+value > required {
+			return value
+		}
+	}
+
+	return -1
 }

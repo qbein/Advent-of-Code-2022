@@ -178,3 +178,14 @@ func Test0701Example(t *testing.T) {
 func Test0701(t *testing.T) {
 	assert.Equal(t, 1477771, dirSizes("input/day07"))
 }
+
+// ---------------------------------------------------------------------------
+// Advent of Code 2022: Day 7, part 2
+
+func Test0702Example(t *testing.T) {
+	assert.Equal(t, 24933642, findDirToDelete(70000000, 30000000, "input/day07_example"))
+}
+
+func Test0702(t *testing.T) {
+	assert.Equal(t, 3579501, findDirToDelete(70000000, 30000000, "input/day07"))
+}
