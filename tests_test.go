@@ -167,3 +167,14 @@ func Test0602Example(t *testing.T) {
 func Test0602(t *testing.T) {
 	assert.Equal(t, 3605, findStartOfPacketFromFile("input/day06", 14))
 }
+
+// ---------------------------------------------------------------------------
+// Advent of Code 2022: Day 7, part 1
+
+func Test0701Example(t *testing.T) {
+	assert.Equal(t, 95437, dirSizes("input/day07_example"))
+}
+
+func Test0701(t *testing.T) {
+	assert.Equal(t, 1477771, dirSizes("input/day07"))
+}

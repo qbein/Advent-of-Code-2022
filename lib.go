@@ -424,3 +424,60 @@ func findStartOfPacketFromFile(fileName string, frameSize int) int {
 	})
 	return start
 }
+
+func dirSizes(fileName string) int {
+	dir := make(map[string]int)
+
+	cmdRegex := regexp.MustCompile(`^\$ ([a-z]+)(.*)$`)
+	fileRegex := regexp.MustCompile(`^(\d+) (\S+)$`)
+
+	cd := "/"
+
+	forLines(fileName, func(line string) {
+		if cmdRegex.MatchString(line) {
+			cmdMatch := cmdRegex.FindAllStringSubmatch(line, -1)
+			switch cmdMatch[0][1] {
+			case "cd":
+				dirName := strings.TrimSpace(cmdMatch[0][2])
+
+				if dirName == "/" {
+					cd = "/"
+				} else if dirName == ".." {
+					cd = cd[0 : strings.LastIndex(cd, "/")-1]
+				} else {
+					cd = fmt.Sprintf("%s%s/", cd, dirName)
+				}
+			case "ls":
+				// Noop
+			}
+			return
+		}
+
+		if fileRegex.MatchString(line) {
+			fileMatch := fileRegex.FindAllStringSubmatch(line, -1)
+			fileSize := MustAtoi(fileMatch[0][1])
+			dir[cd] += fileSize
+
+			addSizeToParentDirs(cd, dir, fileSize)
+		}
+	})
+
+	sum := 0
+	for _, value := range dir {
+		if value < 100000 {
+			sum += value
+		}
+	}
+	return sum
+}
+
+func addSizeToParentDirs(cd string, dir map[string]int, fileSize int) {
+	for {
+		i := strings.LastIndexByte(cd[0:len(cd)-1], '/') + 1
+		if i <= 0 {
+			break
+		}
+		cd = cd[0:i]
+		dir[cd] += fileSize
+	}
+}
