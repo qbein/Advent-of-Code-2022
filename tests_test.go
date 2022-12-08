@@ -189,3 +189,14 @@ func Test0702Example(t *testing.T) {
 func Test0702(t *testing.T) {
 	assert.Equal(t, 3579501, findDirToDelete(70000000, 30000000, "input/day07"))
 }
+
+// ---------------------------------------------------------------------------
+// Advent of Code 2022: Day 8, part 1
+
+func Test0801Example(t *testing.T) {
+	assert.Equal(t, 21, countHiddenTrees("input/day08_example"))
+}
+
+func Test0801(t *testing.T) {
+	assert.Equal(t, 1719, countHiddenTrees("input/day08"))
+}

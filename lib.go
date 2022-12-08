@@ -505,3 +505,81 @@ func findDirToDelete(total int, required int, fileName string) int {
 
 	return -1
 }
+
+func countHiddenTrees(fileName string) int {
+	trees := make([][]int, 0)
+
+	forLines(fileName, func(line string) {
+		trees = append(trees, treeRowToSlice(line))
+	})
+
+	// Ignore possibility of varying row sizes, and empty dataset
+	height := len(trees)
+	width := len(trees[0])
+	visibleCount := width*2 + height*2 - 4
+
+	// Offsetting start and stop since all edges are visible
+	for row := 1; row < height-1; row++ {
+		for col := 1; col < width-1; col++ {
+			if isTreeVisible(trees, row, col) {
+				visibleCount++
+			}
+		}
+	}
+
+	return visibleCount
+}
+
+func treeRowToSlice(row string) []int {
+	slice := make([]int, len(strings.TrimSpace(row)))
+	for i, r := range row {
+		slice[i] = int(r - '0')
+	}
+	return slice
+}
+
+func isTreeVisible(trees [][]int, row int, col int) bool {
+	return isTreeVisibleInDirection(trees, row, col, 'n') ||
+		isTreeVisibleInDirection(trees, row, col, 's') ||
+		isTreeVisibleInDirection(trees, row, col, 'e') ||
+		isTreeVisibleInDirection(trees, row, col, 'w')
+}
+
+func isTreeVisibleInDirection(trees [][]int, row int, col int, direction rune) bool {
+	slice := make([]int, 0)
+	switch direction {
+	case 'n':
+		slice = make([]int, row)
+		for i := 0; i < row; i++ {
+			slice[i] = trees[i][col]
+		}
+	case 's':
+		slice = make([]int, len(trees)-row-1)
+		j := 0
+		for i := row + 1; i < len(trees); i++ {
+			slice[j] = trees[i][col]
+			j++
+		}
+	case 'e':
+		slice = trees[row][col+1:]
+	case 'w':
+		slice = trees[row][0:col]
+	default:
+		panic(fmt.Sprintf("Invalid direction %c (valid: n, s, e, w)", direction))
+	}
+
+	if maxInSlice(slice) < trees[row][col] {
+		return true
+	}
+	return false
+}
+
+func maxInSlice(slice []int) int {
+	max := slice[0]
+	for _, v := range slice {
+		if v > max {
+			max = v
+		}
+	}
+	return max
+}
