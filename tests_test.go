@@ -200,3 +200,20 @@ func Test0801Example(t *testing.T) {
 func Test0801(t *testing.T) {
 	assert.Equal(t, 1719, countHiddenTrees("input/day08"))
 }
+
+// ---------------------------------------------------------------------------
+// Advent of Code 2022: Day 8, part 2
+
+func Test0802Example(t *testing.T) {
+	x, y, score := findMostScenicTree("input/day08_example")
+	assert.Equal(t, 2, x)
+	assert.Equal(t, 3, y)
+	assert.Equal(t, 8, score)
+}
+
+func Test0802(t *testing.T) {
+	x, y, score := findMostScenicTree("input/day08")
+	assert.Equal(t, 46, x)
+	assert.Equal(t, 85, y)
+	assert.Equal(t, 590824, score)
+}

@@ -506,9 +506,8 @@ func findDirToDelete(total int, required int, fileName string) int {
 	return -1
 }
 
-func countHiddenTrees(fileName string) int {
+func parseTrees(fileName string) ([][]int, int, int) {
 	trees := make([][]int, 0)
-
 	forLines(fileName, func(line string) {
 		trees = append(trees, treeRowToSlice(line))
 	})
@@ -516,6 +515,13 @@ func countHiddenTrees(fileName string) int {
 	// Ignore possibility of varying row sizes, and empty dataset
 	height := len(trees)
 	width := len(trees[0])
+
+	return trees, height, width
+}
+
+func countHiddenTrees(fileName string) int {
+	trees, height, width := parseTrees(fileName)
+
 	visibleCount := width*2 + height*2 - 4
 
 	// Offsetting start and stop since all edges are visible
@@ -546,6 +552,14 @@ func isTreeVisible(trees [][]int, row int, col int) bool {
 }
 
 func isTreeVisibleInDirection(trees [][]int, row int, col int, direction rune) bool {
+	slice := findTreesInDirection(trees, row, col, direction)
+	if maxInSlice(slice) < trees[row][col] {
+		return true
+	}
+	return false
+}
+
+func findTreesInDirection(trees [][]int, row int, col int, direction rune) []int {
 	slice := make([]int, 0)
 	switch direction {
 	case 'n':
@@ -568,10 +582,7 @@ func isTreeVisibleInDirection(trees [][]int, row int, col int, direction rune) b
 		panic(fmt.Sprintf("Invalid direction %c (valid: n, s, e, w)", direction))
 	}
 
-	if maxInSlice(slice) < trees[row][col] {
-		return true
-	}
-	return false
+	return slice
 }
 
 func maxInSlice(slice []int) int {
@@ -582,4 +593,74 @@ func maxInSlice(slice []int) int {
 		}
 	}
 	return max
+}
+
+func calculateScenicScore(trees [][]int, row int, col int) int {
+	return calculateScenicScoreInDirection(trees, row, col, 'n') *
+		calculateScenicScoreInDirection(trees, row, col, 's') *
+		calculateScenicScoreInDirection(trees, row, col, 'e') *
+		calculateScenicScoreInDirection(trees, row, col, 'w')
+}
+
+func calculateScenicScoreInDirection(trees [][]int, row int, col int, direction rune) int {
+	slice := findTreesInDirection(trees, row, col, direction)
+	outHeight := trees[row][col]
+
+	switch direction {
+	case 'n':
+		return calculateSliceScenicScore(outHeight, reverseSlice(slice))
+	case 'w':
+		return calculateSliceScenicScore(outHeight, reverseSlice(slice))
+	case 's':
+		return calculateSliceScenicScore(outHeight, slice)
+	case 'e':
+		return calculateSliceScenicScore(outHeight, slice)
+	default:
+		panic(fmt.Sprintf("Invalid direction %c (valid: n, s, e, w)", direction))
+	}
+}
+
+func reverseSlice(slice []int) []int {
+	l := len(slice)
+	reversed := make([]int, l)
+	for i, v := range slice {
+		reversed[l-i-1] = v
+	}
+	return reversed
+}
+
+func calculateSliceScenicScore(ourHeight int, slice []int) int {
+	score := 0
+	highest := 0
+
+	for _, h := range slice {
+		score++
+		if h >= highest {
+			highest = h
+		}
+		if h >= ourHeight {
+			break
+		}
+	}
+	return score
+}
+
+func findMostScenicTree(fileName string) (int, int, int) {
+	x, y, score := 0, 0, -1
+
+	trees, height, width := parseTrees(fileName)
+
+	// Offsetting start and stop since all edges are visible
+	for row := 1; row < height-1; row++ {
+		for col := 1; col < width-1; col++ {
+			s := calculateScenicScore(trees, row, col)
+			if s > score {
+				score = s
+				x = col
+				y = row
+			}
+		}
+	}
+
+	return x, y, score
 }
