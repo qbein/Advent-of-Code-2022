@@ -219,12 +219,27 @@ func Test0802(t *testing.T) {
 }
 
 // ---------------------------------------------------------------------------
-// Advent of Code 2022: Day 8, part 2
+// Advent of Code 2022: Day 9, part 1
 
 func Test0901Example(t *testing.T) {
-	assert.Equal(t, 13, countRopeTailPositions("input/day09_example"))
+	assert.Equal(t, 13, countRopeTailPositions("input/day09_example", 2))
+}
+
+func Test0901(t *testing.T) {
+	assert.Equal(t, 6284, countRopeTailPositions("input/day09", 2))
+}
+
+// ---------------------------------------------------------------------------
+// Advent of Code 2022: Day 9, part 2
+
+func Test0902Example1(t *testing.T) {
+	assert.Equal(t, 1, countRopeTailPositions("input/day09_example", 10))
+}
+
+func Test0902Example2(t *testing.T) {
+	assert.Equal(t, 36, countRopeTailPositions("input/day0902_example", 10))
 }
 
 func Test0902(t *testing.T) {
-	assert.Equal(t, 6284, countRopeTailPositions("input/day09"))
+	assert.Equal(t, 2661, countRopeTailPositions("input/day09", 10))
 }
