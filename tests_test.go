@@ -217,3 +217,14 @@ func Test0802(t *testing.T) {
 	assert.Equal(t, 85, y)
 	assert.Equal(t, 590824, score)
 }
+
+// ---------------------------------------------------------------------------
+// Advent of Code 2022: Day 8, part 2
+
+func Test0901Example(t *testing.T) {
+	assert.Equal(t, 13, countRopeTailPositions("input/day09_example"))
+}
+
+func Test0902(t *testing.T) {
+	assert.Equal(t, 6284, countRopeTailPositions("input/day09"))
+}
