@@ -775,3 +775,38 @@ func readRopeHeadMoves(fileName string) []string {
 	})
 	return moves
 }
+
+func findSignalStrength(fileName string) int {
+	signalStrengthSum := 0
+	cycle := 1
+	x := 1
+
+	forLines(fileName, func(line string) {
+		p := strings.Split(line, " ")
+		instruction := strings.TrimSpace(p[0])
+		var argument int
+		if len(p) > 1 {
+			argument = MustAtoi(p[1])
+		}
+
+		cyclesToComplete := 1
+
+		if instruction == "addx" {
+			cyclesToComplete = 2
+		}
+
+		cycleUntil := cycle + cyclesToComplete
+		for ; cycle < cycleUntil; cycle++ {
+			if cycle > 0 && cycle == 20 || (cycle > 40 && (cycle-20)%40 == 0) {
+				signalStrength := x * cycle
+				signalStrengthSum += signalStrength
+			}
+		}
+
+		if instruction == "addx" {
+			x += argument
+		}
+	})
+
+	return signalStrengthSum
+}

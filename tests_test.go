@@ -243,3 +243,14 @@ func Test0902Example2(t *testing.T) {
 func Test0902(t *testing.T) {
 	assert.Equal(t, 2661, countRopeTailPositions("input/day09", 10))
 }
+
+// ---------------------------------------------------------------------------
+// Advent of Code 2022: Day 10, part 1
+
+func Test1001Example(t *testing.T) {
+	assert.Equal(t, 13140, findSignalStrength("input/day10_example"))
+}
+
+func Test1001(t *testing.T) {
+	assert.Equal(t, 14920, findSignalStrength("input/day10"))
+}
