@@ -254,3 +254,14 @@ func Test1001Example(t *testing.T) {
 func Test1001(t *testing.T) {
 	assert.Equal(t, 14920, findSignalStrength("input/day10"))
 }
+
+// ---------------------------------------------------------------------------
+// Advent of Code 2022: Day 10, part 2
+
+func Test1002Example(t *testing.T) {
+	renderSignalToCrt("input/day10_example")
+}
+
+func Test1002(t *testing.T) {
+	renderSignalToCrt("input/day10")
+}

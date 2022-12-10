@@ -690,7 +690,7 @@ func countRopeTailPositions(fileName string, knotCount int) int {
 
 	lastPos := ""
 
-	for mi, move := range moves {
+	for _, move := range moves {
 		p := strings.Split(move, " ")
 		d := p[0]
 		s, _ := strconv.Atoi(p[1])
@@ -706,7 +706,7 @@ func countRopeTailPositions(fileName string, knotCount int) int {
 
 			last := knots[len(knots)-1]
 			pos := last.ToString()
-			fmt.Printf("tail: %s, mi: %d\n", pos, mi)
+
 			if lastPos != pos {
 				tailPositions[pos] = true
 				lastPos = pos
@@ -776,9 +776,8 @@ func readRopeHeadMoves(fileName string) []string {
 	return moves
 }
 
-func findSignalStrength(fileName string) int {
-	signalStrengthSum := 0
-	cycle := 1
+func renderSignal(fileName string, renderer func(int, int)) {
+	cycle := 0
 	x := 1
 
 	forLines(fileName, func(line string) {
@@ -790,23 +789,50 @@ func findSignalStrength(fileName string) int {
 		}
 
 		cyclesToComplete := 1
-
 		if instruction == "addx" {
 			cyclesToComplete = 2
 		}
 
 		cycleUntil := cycle + cyclesToComplete
 		for ; cycle < cycleUntil; cycle++ {
-			if cycle > 0 && cycle == 20 || (cycle > 40 && (cycle-20)%40 == 0) {
-				signalStrength := x * cycle
-				signalStrengthSum += signalStrength
-			}
+			renderer(cycle, x)
 		}
 
 		if instruction == "addx" {
 			x += argument
 		}
 	})
+}
+
+func findSignalStrength(fileName string) int {
+	signalStrengthSum := 0
+
+	renderSignal(fileName, func(cycle int, x int) {
+		c := cycle + 1
+		if c > 0 && c == 20 || (c > 40 && (c-20)%40 == 0) {
+			signalStrength := x * c
+			signalStrengthSum += signalStrength
+		}
+	})
 
 	return signalStrengthSum
+}
+
+func renderSignalToCrt(fileName string) {
+	fmt.Printf("\nCRT output from %s:\n\n", fileName)
+
+	renderSignal(fileName, func(cycle int, x int) {
+		col := cycle % 40
+		if cycle > 0 && col == 0 {
+			fmt.Println()
+		}
+		if col >= x-1 && col <= x+1 {
+			fmt.Print("#")
+		} else {
+			fmt.Print(" ")
+		}
+	})
+
+	fmt.Println()
+	fmt.Println()
 }
