@@ -265,3 +265,27 @@ func Test1002Example(t *testing.T) {
 func Test1002(t *testing.T) {
 	renderSignalToCrt("input/day10")
 }
+
+// ---------------------------------------------------------------------------
+// Advent of Code 2022: Day 11, part 1
+
+func Test1101Example(t *testing.T) {
+	assert.Equal(t, 10605, executeDay11("input/day11_example", 20))
+}
+
+func Test1101(t *testing.T) {
+	assert.Equal(t, 111210, executeDay11("input/day11", 20))
+}
+
+// ---------------------------------------------------------------------------
+// Advent of Code 2022: Day 11, part 2
+
+func Test1102Example(t *testing.T) {
+	assert.Equal(t, 2713310158, executeDay11("input/day11_example", 1000))
+}
+
+/*
+func Test1102(t *testing.T) {
+	assert.Equal(t, 111210, executeDay11("input/day11", 1000))
+}
+*/
