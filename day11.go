@@ -10,20 +10,21 @@ import (
 
 type Monkey struct {
 	id            int
-	items         []int
-	operation     func(int) int
-	divisor       int
+	items         []uint64
+	operation     func(uint64) uint64
+	divisor       uint64
 	falseMonkeyId int
 	trueMonkeyId  int
 	monkeys       map[int]*Monkey
 	throwCount    int
+	mod           uint64
 }
 
-func (m *Monkey) AddItem(item int) {
+func (m *Monkey) AddItem(item uint64) {
 	m.items = append(m.items, item)
 }
 
-func (m *Monkey) RemoveItem(item int) bool {
+func (m *Monkey) RemoveItem(item uint64) bool {
 	for i, v := range m.items {
 		if v == item {
 			m.items = slices.Delete(m.items, i, i+1)
@@ -33,12 +34,15 @@ func (m *Monkey) RemoveItem(item int) bool {
 	return false
 }
 
-func (m *Monkey) CalculateNewWorryLevel(item int) int {
-	return m.operation(item) / 3
+func (m *Monkey) CalculateNewWorryLevel(item uint64) uint64 {
+	if m.mod > 0 {
+		return m.operation(item) % m.mod
+	} else {
+		return m.operation(item) / 3
+	}
 }
 
-func (m *Monkey) ThrowItem(item int) {
-	//fmt.Println(m.CalculateNewWorryLevel(item))
+func (m *Monkey) ThrowItem(item uint64) {
 	if m.CalculateNewWorryLevel(item)%m.divisor == 0 {
 		m.ThrowItemTo(m.trueMonkeyId, item)
 	} else {
@@ -47,7 +51,7 @@ func (m *Monkey) ThrowItem(item int) {
 	m.throwCount++
 }
 
-func (m *Monkey) ThrowItemTo(monkeyId int, item int) {
+func (m *Monkey) ThrowItemTo(monkeyId int, item uint64) {
 	if m.RemoveItem(item) {
 		(*m.monkeys[monkeyId]).AddItem(m.CalculateNewWorryLevel(item))
 	} else {
@@ -55,7 +59,7 @@ func (m *Monkey) ThrowItemTo(monkeyId int, item int) {
 	}
 }
 
-func readMonkeys(fileName string) map[int]*Monkey {
+func readMonkeys(fileName string, part int) map[int]*Monkey {
 	monkeys := make(map[int]*Monkey)
 
 	monkeyRegex := regexp.MustCompile(`^Monkey (\d):`)
@@ -79,10 +83,10 @@ func readMonkeys(fileName string) map[int]*Monkey {
 		case 1:
 			itemIds := line[18:]
 			p := strings.Split(itemIds, ", ")
-			items := make([]int, len(p))
+			items := make([]uint64, len(p))
 			monkeys[currentMonkeyId].items = items
 			for i, v := range p {
-				monkeys[currentMonkeyId].items[i] = int(MustAtoi(v))
+				monkeys[currentMonkeyId].items[i] = uint64(MustAtoi(v))
 			}
 		case 2:
 			m := operationRegex.FindAllStringSubmatch(line, -1)
@@ -92,24 +96,24 @@ func readMonkeys(fileName string) map[int]*Monkey {
 			valueAsString := strings.TrimSpace(m[0][2])
 			switch m[0][1] {
 			case "+":
-				monkeys[currentMonkeyId].operation = func(item int) int {
+				monkeys[currentMonkeyId].operation = func(item uint64) uint64 {
 					value := item
 					if valueAsString != "old" {
-						value = int(MustAtoi(valueAsString))
+						value = uint64(MustAtoi(valueAsString))
 					}
 					return item + value
 				}
 			case "*":
-				monkeys[currentMonkeyId].operation = func(item int) int {
+				monkeys[currentMonkeyId].operation = func(item uint64) uint64 {
 					value := item
 					if valueAsString != "old" {
-						value = int(MustAtoi(valueAsString))
+						value = uint64(MustAtoi(valueAsString))
 					}
 					return item * value
 				}
 			}
 		case 3:
-			monkeys[currentMonkeyId].divisor = int(MustAtoi(line[21:]))
+			monkeys[currentMonkeyId].divisor = uint64(MustAtoi(line[21:]))
 		case 4:
 			monkeys[currentMonkeyId].trueMonkeyId = MustAtoi(line[strings.LastIndex(line, " ")+1:])
 		case 5:
@@ -117,12 +121,25 @@ func readMonkeys(fileName string) map[int]*Monkey {
 		}
 	})
 
+	if part == 2 {
+		mod := monkeys[0].divisor
+		for i := 1; i < len(monkeys); i++ {
+			if monkeys[i].divisor > 0 {
+				mod *= monkeys[i].divisor
+			}
+		}
+
+		for _, m := range monkeys {
+			m.mod = mod
+		}
+	}
+
 	return monkeys
 }
 
-func playRoundOfMonkeyInMiddle(monkeys map[int]*Monkey, round int) {
+func playRoundOfMonkeyInMiddle(monkeys map[int]*Monkey) {
 	for i := 0; i < len(monkeys); i++ {
-		itemsInPlay := make([]int, len(monkeys[i].items))
+		itemsInPlay := make([]uint64, len(monkeys[i].items))
 		copy(itemsInPlay, monkeys[i].items)
 		for _, item := range itemsInPlay {
 			monkeys[i].ThrowItem(item)
@@ -130,18 +147,11 @@ func playRoundOfMonkeyInMiddle(monkeys map[int]*Monkey, round int) {
 	}
 }
 
-func printMonkeys(monkeys map[int]*Monkey) {
-	fmt.Println("Monkeys:")
-	for i := 0; i < len(monkeys); i++ {
-		fmt.Printf("  Monkey %d inspected items %d times.\n", i, monkeys[i].throwCount)
-	}
-}
-
-func executeDay11(fileName string, rounds int) int {
-	monkeys := readMonkeys(fileName)
+func executeDay11(fileName string, rounds int, part int) int {
+	monkeys := readMonkeys(fileName, part)
 
 	for i := 0; i < rounds; i++ {
-		playRoundOfMonkeyInMiddle(monkeys, i)
+		playRoundOfMonkeyInMiddle(monkeys)
 	}
 
 	throwCounts := make([]int, len(monkeys))

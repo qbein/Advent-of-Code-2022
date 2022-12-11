@@ -270,22 +270,20 @@ func Test1002(t *testing.T) {
 // Advent of Code 2022: Day 11, part 1
 
 func Test1101Example(t *testing.T) {
-	assert.Equal(t, 10605, executeDay11("input/day11_example", 20))
+	assert.Equal(t, 10605, executeDay11("input/day11_example", 20, 1))
 }
 
 func Test1101(t *testing.T) {
-	assert.Equal(t, 111210, executeDay11("input/day11", 20))
+	assert.Equal(t, 111210, executeDay11("input/day11", 20, 1))
 }
 
 // ---------------------------------------------------------------------------
 // Advent of Code 2022: Day 11, part 2
 
 func Test1102Example(t *testing.T) {
-	assert.Equal(t, 2713310158, executeDay11("input/day11_example", 1000))
+	assert.Equal(t, 2713310158, executeDay11("input/day11_example", 10000, 2))
 }
 
-/*
 func Test1102(t *testing.T) {
-	assert.Equal(t, 111210, executeDay11("input/day11", 1000))
+	assert.Equal(t, 15447387620, executeDay11("input/day11", 10000, 2))
 }
-*/
