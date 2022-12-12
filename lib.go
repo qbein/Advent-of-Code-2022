@@ -57,13 +57,12 @@ func (p *CrateMover9001) MoveCrates(stacks [][]rune, num int, fromIdx int, toIdx
 }
 
 type Coordinate struct {
-	id int
 	x  int
 	y  int
 }
 
 func (c *Coordinate) ToString() string {
-	return fmt.Sprintf("id %d = %d:%d", c.id, c.x, c.y)
+	return fmt.Sprintf("%d:%d", c.x, c.y)
 }
 
 // ---------------------------------------------------------------------------
@@ -73,6 +72,13 @@ func check(e error) {
 	if e != nil {
 		panic(e)
 	}
+}
+
+func abs(value int) int {
+	if value < 0 {
+		return -value
+	}
+	return value
 }
 
 func forLines(fileName string, action func(string)) {
@@ -680,9 +686,6 @@ func countRopeTailPositions(fileName string, knotCount int) int {
 
 	// Initialize and place all knot in center of grid
 	knots := make([]Coordinate, knotCount)
-	for i, knot := range knots {
-		knot.id = i
-	}
 
 	// Map for keeping track of tail positions
 	tailPositions := make(map[string]bool)

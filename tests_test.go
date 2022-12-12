@@ -287,3 +287,14 @@ func Test1102Example(t *testing.T) {
 func Test1102(t *testing.T) {
 	assert.Equal(t, 15447387620, executeDay11("input/day11", 10000, 2))
 }
+
+// ---------------------------------------------------------------------------
+// Advent of Code 2022: Day 12, part 1
+
+func Test1201Example(t *testing.T) {
+	assert.Equal(t, 31, findShortestRoute("input/day12_example"))
+}
+
+func Test1201(t *testing.T) {
+	assert.Equal(t, 456, findShortestRoute("input/day12"))
+}
