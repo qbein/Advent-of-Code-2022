@@ -1,7 +1,7 @@
 package adventOfCode2022
 
 import (
-	"fmt"
+	"math"
 	"strings"
 )
 
@@ -24,45 +24,26 @@ func NodeFromCoordinate(coordinate Coordinate, count int, parent *Node) Node {
 	return Node{x: coordinate.x, y: coordinate.y, count: count, parent: parent}
 }
 
-func CoordinateFromNode(node Node) Coordinate {
-	return Coordinate{x: node.x, y: node.y}
-}
-
 func (s *Solver) FindShortest() int {
 	queue := make([]Node, 0)
 	queue = append(queue, NodeFromCoordinate(s.start, 0, nil))
 
-	fmt.Printf("  0123456789")
-	for y, r := range s.heightMap {
-		fmt.Printf("%d ", y)
-		for _, c := range r {
-			fmt.Printf("%s", string(c))
-		}
-		fmt.Println()
-	}
-
-	for i:=0; ; i++ {
-		if len(queue) == 0 {
-			break
-		}
-
+	for i:=0; i<len(queue); i++ {
 		current := queue[i]
 
 		if current.x == s.end.x && current.y == s.end.y {
-			fmt.Printf("Found exist from x:%d y:%d count:%count\n", current.x, current.y, current.count)
 			return current.count
 		}
 
 		adjacentItems := make([]Coordinate, 0)
-		adjacentItems = s.appendIfValid(queue, adjacentItems, current, Coordinate{x: current.x, y: current.y+1})
-		adjacentItems = s.appendIfValid(queue, adjacentItems, current, Coordinate{x: current.x+1, y: current.y})
+		adjacentItems = s.appendIfValid(queue, adjacentItems, current, Coordinate{x: current.x, y: current.y + 1})
+		adjacentItems = s.appendIfValid(queue, adjacentItems, current, Coordinate{x: current.x + 1, y: current.y})
 		adjacentItems = s.appendIfValid(queue, adjacentItems, current, Coordinate{x: current.x - 1, y: current.y})
-		adjacentItems = s.appendIfValid(queue, adjacentItems, current, Coordinate{x: current.x, y: current.y-1})
+		adjacentItems = s.appendIfValid(queue, adjacentItems, current, Coordinate{x: current.x, y: current.y - 1})
 
 		for _, v := range adjacentItems {
 			count := current.count+1
 			queue = append(queue, NodeFromCoordinate(v, count, &current))
-			fmt.Printf("Appending x:%d, y:%d, count: %d (parent x:%d y:%d)\n", v.x, v.y, count, current.x, current.y)
 		}
 	}
 
@@ -140,6 +121,33 @@ func SolverForFile(fileName string) Solver {
 
 
 func findShortestRoute(fileName string) int {
-	heightMap := SolverForFile(fileName)
-	return heightMap.FindShortest()
+	solver := SolverForFile(fileName)
+	return solver.FindShortest()
+}
+
+func findShortestRouteFromAny(fileName string, character rune) int {
+	solver := SolverForFile(fileName)
+
+	startOptions := make([]Coordinate, 0)
+
+	for y, r := range solver.heightMap {
+		for x, c := range r {
+			if c == character {
+				startOptions = append(startOptions, Coordinate{x:x, y:y})
+			}
+		}
+	}
+
+	minCount := math.MaxInt
+
+	for _, start := range startOptions {
+		solver.start = start
+		count := solver.FindShortest()
+
+		if count >= 0 && count < minCount {
+			minCount = count
+		}
+	}
+
+	return minCount
 }
