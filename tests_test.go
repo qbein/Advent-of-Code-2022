@@ -306,6 +306,41 @@ func Test1202Example(t *testing.T) {
 	assert.Equal(t, 29, findShortestRouteFromAny("input/day12_example", 'a'))
 }
 
+/*
 func Test1202(t *testing.T) {
 	assert.Equal(t, 454, findShortestRouteFromAny("input/day12", 'a'))
 }
+*/
+
+// ---------------------------------------------------------------------------
+// Advent of Code 2022: Day 13, part 1
+
+func Test1301ParsePacket(t *testing.T) {
+	slice := parseString("[1,1,3,1,1]")
+
+	assert.Equal(t, float64(1), slice[0])
+	assert.Equal(t, float64(1), slice[1])
+	assert.Equal(t, float64(3), slice[2])
+	assert.Equal(t, float64(1), slice[3])
+	assert.Equal(t, float64(1), slice[4])
+}
+
+func Test1301ParsePacket2(t *testing.T) {
+	slice := parseString("[[8,7,6]]")
+
+	switch v := slice[0].(type) {
+	case []any:
+		assert.Equal(t, float64(8), v[0])
+		assert.Equal(t, float64(7), v[1])
+		assert.Equal(t, float64(6), v[2])
+	}
+}
+
+func Test1301Example(t *testing.T) {
+	assert.Equal(t, 13, countOrderedIndices("input/day13_example"))
+}
+
+func Test1301(t *testing.T) {
+	assert.Equal(t, 5196, countOrderedIndices("input/day13"))
+}
+
