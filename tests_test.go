@@ -316,7 +316,7 @@ func Test1202(t *testing.T) {
 // Advent of Code 2022: Day 13, part 1
 
 func Test1301ParsePacket(t *testing.T) {
-	slice := parseString("[1,1,3,1,1]")
+	slice := parsePacketString("[1,1,3,1,1]")
 
 	assert.Equal(t, float64(1), slice[0])
 	assert.Equal(t, float64(1), slice[1])
@@ -326,7 +326,7 @@ func Test1301ParsePacket(t *testing.T) {
 }
 
 func Test1301ParsePacket2(t *testing.T) {
-	slice := parseString("[[8,7,6]]")
+	slice := parsePacketString("[[8,7,6]]")
 
 	switch v := slice[0].(type) {
 	case []any:
@@ -344,3 +344,13 @@ func Test1301(t *testing.T) {
 	assert.Equal(t, 5196, countOrderedIndices("input/day13"))
 }
 
+// ---------------------------------------------------------------------------
+// Advent of Code 2022: Day 13, part 2
+
+func Test1302Example(t *testing.T) {
+	assert.Equal(t, 140, findDecoderKey("input/day13_example"))
+}
+
+func Test1302(t *testing.T) {
+	assert.Equal(t, 22134, findDecoderKey("input/day13"))
+}

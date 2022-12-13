@@ -2,38 +2,60 @@ package adventOfCode2022
 
 import (
 	"encoding/json"
+	"sort"
 	"strings"
 )
 
+func findDecoderKey(fileName string) int {
+	packets := readPackets(fileName)
+	packets = append(packets, "[[2]]")
+	packets = append(packets, "[[6]]")
+
+	sort.SliceStable(packets, func(i int, j int) bool {
+		return Compare(parsePacketString(packets[i]), parsePacketString(packets[j])) < 0
+	})
+
+	key := 1
+
+	for i, v := range packets {
+		if v == "[[2]]" || v == "[[6]]" {
+			key *= i+1
+		}
+	}
+
+	return key
+}
+
 func countOrderedIndices(fileName string) int {
 	count := 0
-
-	var left string
-	var right string
-
-	i := 0
 	packetIndex := 0
 
+	packets := readPackets(fileName)
+
+	for i:=0; i<len(packets)-1; i+=2 {
+		left := packets[i]
+		right := packets[i+1]
+
+		packetIndex++
+		if Compare(parsePacketString(left), parsePacketString(right)) < 0 {
+			count += packetIndex
+		}
+	}
+
+	return count
+}
+
+func readPackets(fileName string) []string {
+	packets := make([]string, 0)
+
 	forLines(fileName, func(line string) {
-		defer func() {
-			i++
-		}()
-
 		line = strings.TrimSpace(line)
-
-		if i%3 == 0 {
-			left = line
-		} else if i%3 == 1 {
-			right = line
-
-			packetIndex++
-			if Compare(parseString(left), parseString(right)) < 0 {
-				count += packetIndex
-			}
+		if len(line) > 0 {
+			packets = append(packets, strings.TrimSpace(line))
 		}
 	})
 
-	return count
+	return packets
 }
 
 // Compare the two sides. Returns negative numbers if left side
@@ -81,7 +103,7 @@ func Compare(left any, right any) int {
 	return result
 }
 
-func parseString(input string) []any {
+func parsePacketString(input string) []any {
 	var data []any
 	err := json.Unmarshal([]byte(input), &data)
 	check(err)
