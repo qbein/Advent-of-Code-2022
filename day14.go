@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func SandBoxFromFile(fileName string) *sandBox {
+func SandBoxFromFile(fileName string, floorOffset int) *sandBox {
 	sandbox := new(sandBox)
 
 	toCoordinate := func(segment string) Coordinate {
@@ -56,6 +56,12 @@ func SandBoxFromFile(fileName string) *sandBox {
 		}
 	})
 
+	if floorOffset > 0 {
+		maxY += floorOffset
+		minX = minX - 250
+		maxX = maxX + 250
+	}
+
 	// Initialize matrix
 	sandbox.matrix = make([][]int, maxY-minY+1)
 	for y := 0; y < len(sandbox.matrix); y++ {
@@ -69,6 +75,14 @@ func SandBoxFromFile(fileName string) *sandBox {
 	}
 
 	sandbox.dropCoordinate = Coordinate{x: 500 - minX, y: 0}
+
+	// Fill floor
+	if floorOffset >= 0 {
+		row := sandbox.matrix[len(sandbox.matrix)-1]
+		for i := 0; i < len(row); i++ {
+			row[i] = 1
+		}
+	}
 
 	return sandbox
 }
@@ -84,12 +98,12 @@ func (s *sandBox) print() {
 	for y, row := range s.matrix {
 		for x, v := range row {
 			c := "."
-			if s.dropCoordinate.x == x && s.dropCoordinate.y == y {
+			if v == 2 {
+				c = "o"
+			} else if s.dropCoordinate.x == x && s.dropCoordinate.y == y {
 				c = "+"
 			} else if v == 1 {
 				c = "#"
-			} else if v == 2 {
-				c = "o"
 			}
 			fmt.Printf("%s", c)
 		}
@@ -112,7 +126,13 @@ func (s *sandBox) drop(verbose bool) bool {
 		if err != nil {
 			return false
 		}
-		// Nowhere to go
+		// Unit it stuck at start position
+		if p.x == s.dropCoordinate.x && p.y == s.dropCoordinate.y {
+			s.matrix[p.y][p.x] = 2
+			s.count++
+			return false
+		}
+		// At rest
 		if p == position {
 			s.matrix[p.y][p.x] = 2
 			s.count++
@@ -147,6 +167,7 @@ func (s *sandBox) step(position Coordinate) (Coordinate, error) {
 	if s.matrix[position.y+1][position.x+1] == 0 {
 		return Coordinate{x: position.x + 1, y: position.y + 1}, nil
 	}
+
 	// Nowhere to go
 	return position, nil
 }

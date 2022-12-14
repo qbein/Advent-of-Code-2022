@@ -359,9 +359,20 @@ func Test1302(t *testing.T) {
 // Advent of Code 2022: Day 14, part 1
 
 func Test1401Example(t *testing.T) {
-	assert.Equal(t, 24, SandBoxFromFile("input/day14_example").solve(false))
+	assert.Equal(t, 24, SandBoxFromFile("input/day14_example", -1).solve(false))
 }
 
 func Test1401(t *testing.T) {
-	assert.Equal(t, 892, SandBoxFromFile("input/day14").solve(false))
+	assert.Equal(t, 892, SandBoxFromFile("input/day14", -1).solve(false))
+}
+
+// ---------------------------------------------------------------------------
+// Advent of Code 2022: Day 14, part 2
+
+func Test1402Example(t *testing.T) {
+	assert.Equal(t, 93, SandBoxFromFile("input/day14_example", 2).solve(false))
+}
+
+func Test1402(t *testing.T) {
+	assert.Equal(t, 27155, SandBoxFromFile("input/day14", 2).solve(false))
 }
