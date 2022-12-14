@@ -354,3 +354,14 @@ func Test1302Example(t *testing.T) {
 func Test1302(t *testing.T) {
 	assert.Equal(t, 22134, findDecoderKey("input/day13"))
 }
+
+// ---------------------------------------------------------------------------
+// Advent of Code 2022: Day 14, part 1
+
+func Test1401Example(t *testing.T) {
+	assert.Equal(t, 24, SandBoxFromFile("input/day14_example").solve(false))
+}
+
+func Test1401(t *testing.T) {
+	assert.Equal(t, 892, SandBoxFromFile("input/day14").solve(false))
+}

@@ -74,6 +74,20 @@ func check(e error) {
 	}
 }
 
+func min(a int, b int) int {
+	if a<b {
+		return a
+	}
+	return b
+}
+
+func max(a int, b int) int {
+	if a>b {
+		return a
+	}
+	return b
+}
+
 func abs(value int) int {
 	if value < 0 {
 		return -value
