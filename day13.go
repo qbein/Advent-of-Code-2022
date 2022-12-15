@@ -6,38 +6,38 @@ import (
 	"strings"
 )
 
-func findDecoderKey(fileName string) int {
+func FindDecoderKey(fileName string) int {
 	packets := readPackets(fileName)
 	packets = append(packets, "[[2]]")
 	packets = append(packets, "[[6]]")
 
 	sort.SliceStable(packets, func(i int, j int) bool {
-		return Compare(parsePacketString(packets[i]), parsePacketString(packets[j])) < 0
+		return Compare(ParsePacketString(packets[i]), ParsePacketString(packets[j])) < 0
 	})
 
 	key := 1
 
 	for i, v := range packets {
 		if v == "[[2]]" || v == "[[6]]" {
-			key *= i+1
+			key *= i + 1
 		}
 	}
 
 	return key
 }
 
-func countOrderedIndices(fileName string) int {
+func CountOrderedIndices(fileName string) int {
 	count := 0
 	packetIndex := 0
 
 	packets := readPackets(fileName)
 
-	for i:=0; i<len(packets)-1; i+=2 {
+	for i := 0; i < len(packets)-1; i += 2 {
 		left := packets[i]
 		right := packets[i+1]
 
 		packetIndex++
-		if Compare(parsePacketString(left), parsePacketString(right)) < 0 {
+		if Compare(ParsePacketString(left), ParsePacketString(right)) < 0 {
 			count += packetIndex
 		}
 	}
@@ -48,7 +48,7 @@ func countOrderedIndices(fileName string) int {
 func readPackets(fileName string) []string {
 	packets := make([]string, 0)
 
-	forLines(fileName, func(line string) {
+	ForLinesIn(fileName, func(line string) {
 		line = strings.TrimSpace(line)
 		if len(line) > 0 {
 			packets = append(packets, strings.TrimSpace(line))
@@ -60,7 +60,7 @@ func readPackets(fileName string) []string {
 
 // Compare the two sides. Returns negative numbers if left side
 // is smaller (in order), 0 if sides are equal (in order), and
-//positive numbers if right side is larger (out of order).
+// positive numbers if right side is larger (out of order).
 func Compare(left any, right any) int {
 	_, okL := left.(float64)
 	_, okR := right.(float64)
@@ -103,7 +103,7 @@ func Compare(left any, right any) int {
 	return result
 }
 
-func parsePacketString(input string) []any {
+func ParsePacketString(input string) []any {
 	var data []any
 	err := json.Unmarshal([]byte(input), &data)
 	check(err)

@@ -9,14 +9,14 @@ import (
 // Ref. https://en.wikipedia.org/wiki/Pathfinding
 type Solver struct {
 	heightMap [][]rune
-	start Coordinate
-	end Coordinate
+	start     Coordinate
+	end       Coordinate
 }
 
 type Node struct {
-	x int
-	y int
-	count int
+	x      int
+	y      int
+	count  int
 	parent *Node
 }
 
@@ -28,7 +28,7 @@ func (s *Solver) FindShortest() int {
 	queue := make([]Node, 0)
 	queue = append(queue, NodeFromCoordinate(s.start, 0, nil))
 
-	for i:=0; i<len(queue); i++ {
+	for i := 0; i < len(queue); i++ {
 		current := queue[i]
 
 		if current.x == s.end.x && current.y == s.end.y {
@@ -42,7 +42,7 @@ func (s *Solver) FindShortest() int {
 		adjacentItems = s.appendIfValid(queue, adjacentItems, current, Coordinate{x: current.x, y: current.y - 1})
 
 		for _, v := range adjacentItems {
-			count := current.count+1
+			count := current.count + 1
 			queue = append(queue, NodeFromCoordinate(v, count, &current))
 		}
 	}
@@ -94,7 +94,7 @@ func SolverForFile(fileName string) Solver {
 	var end Coordinate
 
 	y := 0
-	forLines(fileName, func(line string) {
+	ForLinesIn(fileName, func(line string) {
 		line = strings.TrimSpace(line)
 		heightMap = append(heightMap, make([]rune, len(line)))
 		for x, c := range line {
@@ -119,8 +119,7 @@ func SolverForFile(fileName string) Solver {
 	}
 }
 
-
-func findShortestRoute(fileName string) int {
+func FindShortestRoute(fileName string) int {
 	solver := SolverForFile(fileName)
 	return solver.FindShortest()
 }
@@ -133,7 +132,7 @@ func findShortestRouteFromAny(fileName string, character rune) int {
 	for y, r := range solver.heightMap {
 		for x, c := range r {
 			if c == character {
-				startOptions = append(startOptions, Coordinate{x:x, y:y})
+				startOptions = append(startOptions, Coordinate{x: x, y: y})
 			}
 		}
 	}

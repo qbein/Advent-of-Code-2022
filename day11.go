@@ -68,7 +68,7 @@ func readMonkeys(fileName string, part int) map[int]*Monkey {
 	monkeyScanIndex := 0
 	currentMonkeyId := -1
 
-	forLines(fileName, func(line string) {
+	ForLinesIn(fileName, func(line string) {
 		if monkeyRegex.MatchString(line) {
 			m := monkeyRegex.FindAllStringSubmatch(line, 1)
 			currentMonkeyId = MustAtoi(m[0][1])
@@ -147,7 +147,7 @@ func playRoundOfMonkeyInMiddle(monkeys map[int]*Monkey) {
 	}
 }
 
-func executeDay11(fileName string, rounds int, part int) int {
+func ExecuteDay11(fileName string, rounds int, part int) int {
 	monkeys := readMonkeys(fileName, part)
 
 	for i := 0; i < rounds; i++ {

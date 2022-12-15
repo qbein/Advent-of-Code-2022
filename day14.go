@@ -17,14 +17,14 @@ func SandBoxFromFile(fileName string, floorOffset int) *sandBox {
 
 	addLineToMatrix := func(offsetX int, offsetY int, a Coordinate, b Coordinate) {
 		if a.x == b.x {
-			from := min(a.y, b.y)
-			to := max(a.y, b.y)
+			from := MinInt(a.y, b.y)
+			to := MaxInt(a.y, b.y)
 			for y := from; y <= to; y++ {
 				sandbox.matrix[y-offsetY][a.x-offsetX] = 1
 			}
 		} else if a.y == b.y {
-			from := min(a.x, b.x)
-			to := max(a.x, b.x)
+			from := MinInt(a.x, b.x)
+			to := MaxInt(a.x, b.x)
 			for x := from; x <= to; x++ {
 				sandbox.matrix[a.y-offsetY][x-offsetX] = 1
 			}
@@ -34,7 +34,7 @@ func SandBoxFromFile(fileName string, floorOffset int) *sandBox {
 	minX, minY, maxX, maxY := math.MaxInt, 0, math.MinInt, math.MinInt
 
 	segments := make([][]Coordinate, 0)
-	forLines(fileName, func(line string) {
+	ForLinesIn(fileName, func(line string) {
 		p := strings.Split(line, " -> ")
 		segments = append(segments, make([]Coordinate, 0))
 		last := len(segments) - 1
