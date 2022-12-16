@@ -60,7 +60,7 @@ type Coordinate struct {
 }
 
 func (c *Coordinate) ToString() string {
-	return fmt.Sprintf("%d:%d", c.x, c.y)
+	return fmt.Sprintf("x:%d,y:%d", c.x, c.y)
 }
 
 // ---------------------------------------------------------------------------
@@ -193,4 +193,8 @@ func AllLettersUnique(input string) bool {
 		}
 	}
 	return true
+}
+
+func ManhattanDistance(a Coordinate, b Coordinate) int {
+	return AbsInt(a.x-b.x) + AbsInt(a.y-b.y)
 }

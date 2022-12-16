@@ -376,3 +376,26 @@ func Test1402Example(t *testing.T) {
 func Test1402(t *testing.T) {
 	assert.Equal(t, 27155, SandBoxFromFile("input/day14", 2).solve(false))
 }
+
+// ---------------------------------------------------------------------------
+// Advent of Code 2022: Day 15, part 1
+
+func TestManhattanDistance(t *testing.T) {
+	assert.EqualValues(t, 0, ManhattanDistance(Coordinate{x: 0, y: 0}, Coordinate{x: 0, y: 0}))
+	assert.EqualValues(t, 9, ManhattanDistance(Coordinate{x: 8, y: 7}, Coordinate{x: -1, y: 7}))
+	assert.EqualValues(t, 9, ManhattanDistance(Coordinate{x: 8, y: 7}, Coordinate{x: 8, y: -2}))
+	assert.EqualValues(t, 9, ManhattanDistance(Coordinate{x: 8, y: 7}, Coordinate{x: 8, y: 16}))
+	assert.EqualValues(t, 9, ManhattanDistance(Coordinate{x: 8, y: 7}, Coordinate{x: 17, y: 7}))
+	assert.EqualValues(t, 9, ManhattanDistance(Coordinate{x: 8, y: 7}, Coordinate{x: 9, y: 15}))
+	assert.EqualValues(t, 9, ManhattanDistance(Coordinate{x: 8, y: 7}, Coordinate{x: 17, y: 7}))
+	assert.EqualValues(t, 9, ManhattanDistance(Coordinate{x: 8, y: 7}, Coordinate{x: 0, y: 8}))
+	assert.EqualValues(t, 9, ManhattanDistance(Coordinate{x: 8, y: 7}, Coordinate{x: 17, y: 7}))
+}
+
+func Test1501Example(t *testing.T) {
+	assert.Equal(t, 26, CountCoordinatesWithoutMissingBeacon("input/day15_example", 10))
+}
+
+func Test1501(t *testing.T) {
+	assert.Equal(t, 4737443, CountCoordinatesWithoutMissingBeacon("input/day15", 2000000))
+}
