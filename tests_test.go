@@ -393,9 +393,20 @@ func TestManhattanDistance(t *testing.T) {
 }
 
 func Test1501Example(t *testing.T) {
-	assert.Equal(t, 26, CountCoordinatesWithoutMissingBeacon("input/day15_example", 10))
+	assert.Equal(t, 26, CountCoordinatesWithoutMissingBeacon("input/day15_example", 10, -3, 25))
 }
 
 func Test1501(t *testing.T) {
-	assert.Equal(t, 4737443, CountCoordinatesWithoutMissingBeacon("input/day15", 2000000))
+	assert.Equal(t, 4737443, CountCoordinatesWithoutMissingBeacon("input/day15", 2000000, -1000000, 5000000))
+}
+
+// ---------------------------------------------------------------------------
+// Advent of Code 2022: Day 15, part 2
+
+func Test1502Example(t *testing.T) {
+	assert.Equal(t, 56000011, FindTuningFrequency("input/day15_example", 20, false))
+}
+
+func Test1502(t *testing.T) {
+	assert.Equal(t, 11482462818989, FindTuningFrequency("input/day15", 4000000, true))
 }
