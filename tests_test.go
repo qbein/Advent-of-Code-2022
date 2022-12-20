@@ -410,3 +410,10 @@ func Test1502Example(t *testing.T) {
 func Test1502(t *testing.T) {
 	assert.Equal(t, 11482462818989, FindTuningFrequency("input/day15", 4000000, true))
 }
+
+// ---------------------------------------------------------------------------
+// Advent of Code 2022: Day 16, part 1
+
+func Test1601Example(t *testing.T) {
+	assert.Equal(t, 1651, FindMaxPressureAfterMinutes("input/day16_example", 30))
+}
