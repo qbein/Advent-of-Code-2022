@@ -410,3 +410,62 @@ func Test1502Example(t *testing.T) {
 func Test1502(t *testing.T) {
 	assert.Equal(t, 11482462818989, FindTuningFrequency("input/day15", 4000000, true))
 }
+
+// ---------------------------------------------------------------------------
+// Advent of Code 2022: Day 16, part 1
+
+func Test1601MoveTime(t *testing.T) {
+	valves := readValves("input/day16_example")
+	assert.Equal(t, 4, TimeTo(valves, "AA", "GG"), "AA -> GG")
+	assert.Equal(t, 1, TimeTo(valves, "AA", "BB"), "AA -> BB")
+	assert.Equal(t, 1, TimeTo(valves, "AA", "DD"), "AA -> DD")
+	assert.Equal(t, 2, TimeTo(valves, "AA", "CC"), "AA -> CC")
+	assert.Equal(t, 1, TimeTo(valves, "AA", "II"), "AA -> II")
+	assert.Equal(t, 2, TimeTo(valves, "AA", "JJ"), "AA -> JJ")
+	assert.Equal(t, 5, TimeTo(valves, "AA", "HH"), "AA -> HH")
+}
+
+func Test1601MoveTimeDDBB(t *testing.T) {
+	valves := readValves("input/day16_example")
+	assert.Equal(t, 2, TimeTo(valves, "DD", "BB"), "DD -> BB")
+}
+
+func Test1601FindNextToOpenAADD(t *testing.T) {
+	valves := readValves("input/day16_example")
+	currentValve := valves["AA"]
+	openValves := make([]string, 0)
+	move := findNextToOpen(valves, openValves, currentValve, 30)
+	assert.Equal(t, "DD", move.id)
+}
+
+func Test1601FindNextToOpenDDBB(t *testing.T) {
+	valves := readValves("input/day16_example")
+	currentValve := valves["DD"]
+	openValves := []string{"DD"}
+	move := findNextToOpen(valves, openValves, currentValve, 27)
+	assert.Equal(t, "BB", move.id)
+}
+
+func Test1601FindNextToOpenDDCC(t *testing.T) {
+	valves := readValves("input/day16_example")
+	currentValve := valves["DD"]
+	openValves := []string{"BB", "DD", "EE", "HH", "JJ"}
+	move := findNextToOpen(valves, openValves, currentValve, 6)
+	assert.Equal(t, "CC", move.id)
+}
+
+func Test1601FindNextToOpenJJHH(t *testing.T) {
+	valves := readValves("input/day16_example")
+	currentValve := valves["JJ"]
+	valvesToOpen := []string{"BB", "DD", "JJ"}
+	move := findNextToOpen(valves, valvesToOpen, currentValve, 20)
+	assert.Equal(t, "HH", move.id)
+}
+
+func Test1601Example(t *testing.T) {
+	assert.Equal(t, 1651, FindMaxPressureAfterMinutes("input/day16_example"))
+}
+
+func Test1601(t *testing.T) {
+	assert.Equal(t, 1488, FindMaxPressureAfterMinutes("input/day16"))
+}
