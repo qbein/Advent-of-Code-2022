@@ -434,38 +434,53 @@ func Test1601FindNextToOpenAADD(t *testing.T) {
 	valves := readValves("input/day16_example")
 	currentValve := valves["AA"]
 	openValves := make([]string, 0)
-	move := findNextToOpen(valves, openValves, currentValve, 30)
-	assert.Equal(t, "DD", move.id)
+	moves := findNextToOpen(valves, openValves, currentValve, 30)
+	assert.Equal(t, "DD", moves[0].id)
 }
 
 func Test1601FindNextToOpenDDBB(t *testing.T) {
 	valves := readValves("input/day16_example")
 	currentValve := valves["DD"]
 	openValves := []string{"DD"}
-	move := findNextToOpen(valves, openValves, currentValve, 27)
-	assert.Equal(t, "BB", move.id)
+	moves := findNextToOpen(valves, openValves, currentValve, 27)
+	assert.Equal(t, "BB", moves[0].id)
 }
 
 func Test1601FindNextToOpenDDCC(t *testing.T) {
 	valves := readValves("input/day16_example")
 	currentValve := valves["DD"]
 	openValves := []string{"BB", "DD", "EE", "HH", "JJ"}
-	move := findNextToOpen(valves, openValves, currentValve, 6)
-	assert.Equal(t, "CC", move.id)
+	moves := findNextToOpen(valves, openValves, currentValve, 6)
+	assert.Equal(t, "CC", moves[0].id)
 }
 
 func Test1601FindNextToOpenJJHH(t *testing.T) {
 	valves := readValves("input/day16_example")
 	currentValve := valves["JJ"]
 	valvesToOpen := []string{"BB", "DD", "JJ"}
-	move := findNextToOpen(valves, valvesToOpen, currentValve, 20)
-	assert.Equal(t, "HH", move.id)
+	moves := findNextToOpen(valves, valvesToOpen, currentValve, 20)
+	assert.Equal(t, "HH", moves[0].id)
 }
 
 func Test1601Example(t *testing.T) {
-	assert.Equal(t, 1651, FindMaxPressureAfterMinutes("input/day16_example"))
+	assert.Equal(t, 1651, FindMaxPressureAfterMinutes("input/day16_example", 30, 1, false))
 }
 
 func Test1601(t *testing.T) {
-	assert.Equal(t, 1488, FindMaxPressureAfterMinutes("input/day16"))
+	assert.Equal(t, 1488, FindMaxPressureAfterMinutes("input/day16", 30, 1, false))
+}
+
+// ---------------------------------------------------------------------------
+// Advent of Code 2022: Day 16, part 2
+
+func Test1601FindNextToOpenDDJJWorker2(t *testing.T) {
+	valves := readValves("input/day16_example")
+	currentValve := valves["AA"]
+	openValves := []string{"DD", "BB"}
+	moves := findNextToOpen(valves, openValves, currentValve, 26)
+	assert.Equal(t, "JJ", moves[0].id)
+}
+
+func Test1602Example(t *testing.T) {
+	assert.Equal(t, 1707, FindMaxPressureAfterMinutes("input/day16_example", 26, 2, true))
 }

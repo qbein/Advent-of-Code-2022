@@ -1,12 +1,11 @@
 package adventOfCode2022
 
 import (
+	"fmt"
 	"golang.org/x/exp/slices"
 	"regexp"
 	"strings"
 )
-
-const MINUTES = 30
 
 var moveTimeCache map[string]int
 
@@ -34,44 +33,76 @@ func readValves(fileName string) map[string]Valve {
 	return valves
 }
 
-func FindMaxPressureAfterMinutes(fileName string) int {
+type Current struct {
+	id          string
+	minutesLeft int
+}
+
+func FindMaxPressureAfterMinutes(fileName string, minutes int, workers int, verbose bool) int {
+	flow, done := 0, 0
 	valves := readValves(fileName)
 
 	openValves := make([]string, 0)
 
-	currentValve := valves["AA"]
-	minutesLeft := MINUTES
-	flow := 0
+	current := make([]Current, workers)
+	for i := 0; i < workers; i++ {
+		current[i] = Current{id: "AA", minutesLeft: minutes}
+	}
 
 	for {
-		move := findNextToOpen(valves, openValves, currentValve, minutesLeft)
-		if move.id == "" {
+		for workerId := 0; workerId < workers; workerId++ {
+			if !stepCurrent(&current[workerId], valves, openValves, workerId) {
+				done++
+				continue
+			}
+
+			valve := valves[current[workerId].id]
+
+			if verbose {
+				fmt.Printf("Worker %d opens %s, minutes left: %d\n", workerId, valve.id, current[workerId].minutesLeft)
+			}
+
+			openValves = append(openValves, valve.id)
+			flow += valve.flow * current[workerId].minutesLeft
+		}
+		if done >= workers {
 			break
 		}
-
-		currentValve = valves[move.id]
-
-		// Move to valve
-		minutesLeft -= move.moveTime
-
-		// Open valve
-		minutesLeft--
-		if minutesLeft == 0 {
-			break
-		}
-		flow += currentValve.flow * minutesLeft
-		openValves = append(openValves, move.id)
 	}
 
 	return flow
 }
 
-func findNextToOpen(valves map[string]Valve, openValves []string, currentValve Valve, minutesLeft int) Move {
-	if minutesLeft <= 0 {
-		return Move{}
+func stepCurrent(current *Current, valves map[string]Valve, openValves []string, workerId int) bool {
+	moves := findNextToOpen(valves, openValves, valves[current.id], current.minutesLeft)
+	if len(moves) == 0 {
+		return false
 	}
 
-	var bestMove Move
+	move := moves[0]
+	if workerId == 1 && len(moves) > 2 {
+		move = moves[1]
+	}
+
+	current.id = move.id
+
+	// Move to valve
+	current.minutesLeft -= move.moveTime
+
+	// Open valve
+	current.minutesLeft--
+	if current.minutesLeft == 0 {
+		return false
+	}
+	return true
+}
+
+func findNextToOpen(valves map[string]Valve, openValves []string, currentValve Valve, minutesLeft int) []Move {
+	moves := make([]Move, 0)
+
+	if minutesLeft <= 0 {
+		return moves
+	}
 
 	for _, valve := range valves {
 		// Skip open or stuck valves
@@ -94,17 +125,21 @@ func findNextToOpen(valves map[string]Valve, openValves []string, currentValve V
 		move.score = (minutesLeft - move.moveTime) * valve.flow
 
 		// Make sure we're on the optimal path by also inspecting subsequent moves
-		nextMove := findNextToOpen(valves, append(openValves, move.id), valve, minutesLeft-move.moveTime-1)
-		if nextMove.id != "" {
-			move.score += nextMove.score
+		nextMoves := findNextToOpen(valves, append(openValves, move.id), valve, minutesLeft-move.moveTime-1)
+		if len(nextMoves) > 0 {
+			move.score += nextMoves[0].score
 		}
 
-		if move.score > bestMove.score {
-			bestMove = move
-		}
+		moves = append(moves, move)
 	}
 
-	return bestMove
+	slices.SortFunc(
+		moves,
+		func(a Move, b Move) bool {
+			return a.score > b.score
+		})
+
+	return moves
 }
 
 func TimeTo(valves map[string]Valve, from string, to string) int {
