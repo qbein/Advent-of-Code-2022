@@ -434,7 +434,7 @@ func Test1601FindNextToOpenAADD(t *testing.T) {
 	valves := readValves("input/day16_example")
 	currentValve := valves["AA"]
 	openValves := make([]string, 0)
-	moves := findNextToOpen(valves, openValves, currentValve, 30)
+	moves := findNextToOpen(valves, openValves, currentValve, 30, 1, 1)
 	assert.Equal(t, "DD", moves[0].id)
 }
 
@@ -442,7 +442,7 @@ func Test1601FindNextToOpenDDBB(t *testing.T) {
 	valves := readValves("input/day16_example")
 	currentValve := valves["DD"]
 	openValves := []string{"DD"}
-	moves := findNextToOpen(valves, openValves, currentValve, 27)
+	moves := findNextToOpen(valves, openValves, currentValve, 27, 1, 1)
 	assert.Equal(t, "BB", moves[0].id)
 }
 
@@ -450,7 +450,7 @@ func Test1601FindNextToOpenDDCC(t *testing.T) {
 	valves := readValves("input/day16_example")
 	currentValve := valves["DD"]
 	openValves := []string{"BB", "DD", "EE", "HH", "JJ"}
-	moves := findNextToOpen(valves, openValves, currentValve, 6)
+	moves := findNextToOpen(valves, openValves, currentValve, 6, 1, 1)
 	assert.Equal(t, "CC", moves[0].id)
 }
 
@@ -458,7 +458,7 @@ func Test1601FindNextToOpenJJHH(t *testing.T) {
 	valves := readValves("input/day16_example")
 	currentValve := valves["JJ"]
 	valvesToOpen := []string{"BB", "DD", "JJ"}
-	moves := findNextToOpen(valves, valvesToOpen, currentValve, 20)
+	moves := findNextToOpen(valves, valvesToOpen, currentValve, 20, 1, 1)
 	assert.Equal(t, "HH", moves[0].id)
 }
 
@@ -477,10 +477,15 @@ func Test1601FindNextToOpenDDJJWorker2(t *testing.T) {
 	valves := readValves("input/day16_example")
 	currentValve := valves["AA"]
 	openValves := []string{"DD", "BB"}
-	moves := findNextToOpen(valves, openValves, currentValve, 26)
+	moves := findNextToOpen(valves, openValves, currentValve, 26, 1, 1)
 	assert.Equal(t, "JJ", moves[0].id)
 }
 
 func Test1602Example(t *testing.T) {
-	assert.Equal(t, 1707, FindMaxPressureAfterMinutes("input/day16_example", 26, 2, true))
+	assert.Equal(t, 1707, FindMaxPressureAfterMinutes("input/day16_example", 26, 2, false))
+}
+
+func Test1602(t *testing.T) {
+	// > 2090
+	assert.Equal(t, 2090+1, FindMaxPressureAfterMinutes("input/day16", 26, 2, true))
 }

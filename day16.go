@@ -33,7 +33,7 @@ func readValves(fileName string) map[string]Valve {
 	return valves
 }
 
-type Current struct {
+type WorkerState struct {
 	id          string
 	minutesLeft int
 }
@@ -44,26 +44,26 @@ func FindMaxPressureAfterMinutes(fileName string, minutes int, workers int, verb
 
 	openValves := make([]string, 0)
 
-	current := make([]Current, workers)
+	state := make([]WorkerState, workers)
 	for i := 0; i < workers; i++ {
-		current[i] = Current{id: "AA", minutesLeft: minutes}
+		state[i] = WorkerState{id: "AA", minutesLeft: minutes}
 	}
 
 	for {
 		for workerId := 0; workerId < workers; workerId++ {
-			if !stepCurrent(&current[workerId], valves, openValves, workerId) {
+			if !stepCurrent(&state[workerId], valves, openValves, workers) {
 				done++
 				continue
 			}
 
-			valve := valves[current[workerId].id]
+			valve := valves[state[workerId].id]
 
 			if verbose {
-				fmt.Printf("Worker %d opens %s, minutes left: %d\n", workerId, valve.id, current[workerId].minutesLeft)
+				fmt.Printf("Worker %d opens %s, minutes left: %d\n", workerId, valve.id, state[workerId].minutesLeft)
 			}
 
 			openValves = append(openValves, valve.id)
-			flow += valve.flow * current[workerId].minutesLeft
+			flow += valve.flow * state[workerId].minutesLeft
 		}
 		if done >= workers {
 			break
@@ -73,16 +73,21 @@ func FindMaxPressureAfterMinutes(fileName string, minutes int, workers int, verb
 	return flow
 }
 
-func stepCurrent(current *Current, valves map[string]Valve, openValves []string, workerId int) bool {
-	moves := findNextToOpen(valves, openValves, valves[current.id], current.minutesLeft)
+func stepCurrent(
+	current *WorkerState,
+	valves map[string]Valve,
+	openValves []string,
+	workerCount int,
+) bool {
+	moves := findNextToOpen(valves, openValves, valves[current.id], current.minutesLeft, workerCount, 1)
 	if len(moves) == 0 {
 		return false
 	}
 
 	move := moves[0]
-	if workerId == 1 && len(moves) > 2 {
+	/*if workerId == 1 && len(moves) > 2 {
 		move = moves[1]
-	}
+	}*/
 
 	current.id = move.id
 
@@ -97,7 +102,14 @@ func stepCurrent(current *Current, valves map[string]Valve, openValves []string,
 	return true
 }
 
-func findNextToOpen(valves map[string]Valve, openValves []string, currentValve Valve, minutesLeft int) []Move {
+func findNextToOpen(
+	valves map[string]Valve,
+	openValves []string,
+	currentValve Valve,
+	minutesLeft int,
+	workerCount int,
+	recursionLevel int,
+) []Move {
 	moves := make([]Move, 0)
 
 	if minutesLeft <= 0 {
@@ -125,9 +137,16 @@ func findNextToOpen(valves map[string]Valve, openValves []string, currentValve V
 		move.score = (minutesLeft - move.moveTime) * valve.flow
 
 		// Make sure we're on the optimal path by also inspecting subsequent moves
-		nextMoves := findNextToOpen(valves, append(openValves, move.id), valve, minutesLeft-move.moveTime-1)
+		nextMoves := findNextToOpen(
+			valves,
+			append(openValves, move.id),
+			valve,
+			minutesLeft-move.moveTime-1,
+			workerCount,
+			recursionLevel+1,
+		)
 		if len(nextMoves) > 0 {
-			move.score += nextMoves[0].score
+			move.score += nextMoves[0].score / workerCount
 		}
 
 		moves = append(moves, move)
